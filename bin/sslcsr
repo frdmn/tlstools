@@ -1,0 +1,57 @@
+#!/bin/bash
+# ./sslcsr is part of frdmn's ssltools ()
+# Copyright (C) 2013 Jonas Friedmann - License: Attribution-NonCommercial-ShareAlike 3.0 Unported
+
+#####
+# Settings
+#####
+
+DEFAULTEDITOR="vi"
+TMPFILE=".sslcsr.tmp"
+TMPCSR=".sslcsr.tmpcsr"
+
+#####
+# DO NOT EDIT BELOW
+#####
+
+# Write current clipboard to tempfile
+pbpaste > $TMPFILE
+
+# Get the first line
+HEAD=`head -1 $TMPFILE`
+
+# Check clipboard for CSR
+if [[ $HEAD =~ .*BEGIN\ NEW\ CERTIFICATE\ REQUEST.* ]]
+then
+	# Clipboard contains CSR \o/
+	# Parse it
+   	openssl asn1parse -in $TMPFILE > $TMPFILE.1 2>/dev/null
+	
+	# Get the first line
+	HEAD=`head -1 $TMPFILE.1`
+	
+	# Check for proper decypher result
+	if [[ $HEAD =~ .*rror.* ]]
+	then
+		echo "Couldn't decypher CSR, check your clipboard :("
+		exit
+	fi
+else
+	# Clipboard doesn't contain CSR --> create dummy!
+	cat > $TMPCSR << EOHELP
+-----BEGIN NEW CERTIFICATE REQUEST-----
+Remove these lines and replace them with the actuall CSR.
+-----END NEW CERTIFICATE REQUEST-----
+EOHELP
+	# Let the user replace the dummy with the actual CSR
+	$DEFAULTEDITOR $TMPCSR
+
+	# Parse it
+	openssl asn1parse -in $TMPCSR > $TMPFILE.1 2>/dev/null
+fi
+
+# grep for "commonName" | strip whitespaces | cut the first parts | remove the first character
+grep " 23:d=" $TMPFILE.1 | tr -s ' ' | cut -d ' ' -f 8  | cut -c 2-
+
+#openssl req -in .tmp -noout -text
+#rm ./.sslcsr*
