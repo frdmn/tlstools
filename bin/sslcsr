@@ -1,5 +1,5 @@
 #!/bin/bash
-# ./sslcsr is part of frdmn's ssltools ()
+# ./sslcsr is part of frdmn's ssltools (https://github.com/frdmn/ssltools)
 # Copyright (C) 2013 Jonas Friedmann - License: Attribution-NonCommercial-ShareAlike 3.0 Unported
 
 #####
