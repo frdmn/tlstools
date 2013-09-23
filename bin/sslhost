@@ -1,0 +1,35 @@
+#!/bin/bash
+# ./sslhost is part of frdmn's ssltools (https://github.com/frdmn/ssltools)
+# Copyright (C) 2013 Jonas Friedmann - License: Attribution-NonCommercial-ShareAlike 3.0 Unported
+
+#####
+# Settings
+#####
+
+TMPFILE=".sslhost.tmp"
+SERVER=${1}
+PORT=${2:-443}	# optional argument - default: 443
+
+#####
+# DO NOT EDIT BELOW
+#####
+
+# Download temp CRT - http://serverfault.com/a/192731/176412
+echo -n | openssl s_client -connect ${SERVER}:${PORT} 2>/dev/null  | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > ${TMPFILE} 
+
+# Get the first line
+HEAD=`head -1 ${TMPFILE}`
+
+# Check tempfile for CRT
+if [[ ${HEAD} =~ .*BEGIN\ CERTIFICATE.* ]]
+then
+	# Seems good
+	cat ${TMPFILE}
+	exit 0
+else
+	# Error :(
+	echo "Couldn't get certifiacte of '${SERVER}:${PORT}'"
+	exit 1
+fi
+
+rm ${TMPFILE} 
