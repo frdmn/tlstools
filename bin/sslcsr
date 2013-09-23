@@ -53,7 +53,7 @@ fi
 # Parse it
 
 # Define data attributes which should get parsed
-DATA=( "commonName" "organizationalUnitName" "organizationName" "localityName" "stateOrProvinceName" "countryName" )
+DATA=( "commonName" "organizationalUnitName" "organizationName" "localityName" "stateOrProvinceName" "countryName" "emailAddress" )
 
 # For each attribute
 for i in "${DATA[@]}"
