@@ -21,7 +21,7 @@ pbpaste > $TMPFILE
 HEAD=`head -1 $TMPFILE`
 
 # Check clipboard for CSR
-if [[ $HEAD =~ .*BEGIN\ NEW\ CERTIFICATE\ REQUEST.* ]]
+if [[ $HEAD =~ .*CERTIFICATE\ REQUEST.* ]]
 then
 	# Clipboard contains CSR \o/
 	# Parse it
@@ -46,12 +46,25 @@ EOHELP
 	# Let the user replace the dummy with the actual CSR
 	$DEFAULTEDITOR $TMPCSR
 
-	# Parse it
+	# Store it
 	openssl asn1parse -in $TMPCSR > $TMPFILE.1 2>/dev/null
 fi
 
-# grep for "commonName" | strip whitespaces | cut the first parts | remove the first character
-grep " 23:d=" $TMPFILE.1 | tr -s ' ' | cut -d ' ' -f 8  | cut -c 2-
+# Parse it
+
+# Define data attributes which should get parsed
+DATA=( "commonName" "organizationalUnitName" "organizationName" "localityName" "stateOrProvinceName" "countryName" )
+
+# For each attribute
+for i in "${DATA[@]}"
+do
+	# Get line number of data value
+	DATALINE=$((`grep -n "$i" $TMPFILE.1 | tr -s ' ' | cut -d ' ' -f -1 | rev | cut -c 2- | rev`+1))
+	# Get data value
+	DATAVALUE=`sed -n ${DATALINE}p $TMPFILE.1 | tr -s ' ' | cut -d ' ' -f 8-  | cut -c 2-`
+	echo $DATAVALUE
+done
+exit
 
 #openssl req -in .tmp -noout -text
 #rm ./.sslcsr*
