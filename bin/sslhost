@@ -7,12 +7,17 @@
 #####
 
 TMPFILE=".sslhost.tmp"
-SERVER=${1}
+SERVER=${1}		# required argument
 PORT=${2:-443}	# optional argument - default: 443
 
 #####
 # DO NOT EDIT BELOW
 #####
+
+usage(){
+	echo "Usage: $0 <host> [port]"
+	exit 1
+}
 
 # Download temp CRT - http://serverfault.com/a/192731/176412
 echo -n | openssl s_client -connect ${SERVER}:${PORT} 2>/dev/null  | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > ${TMPFILE} 
@@ -21,15 +26,24 @@ echo -n | openssl s_client -connect ${SERVER}:${PORT} 2>/dev/null  | sed -ne '/-
 HEAD=`head -1 ${TMPFILE}`
 
 # Check tempfile for CRT
-if [[ ${HEAD} =~ .*BEGIN\ CERTIFICATE.* ]]
+if [[ ! ${HEAD} =~ .*BEGIN\ CERTIFICATE.* ]]
 then
-	# Seems good
-	cat ${TMPFILE}
-	exit 0
-else
 	# Error :(
 	echo "Couldn't get certifiacte of '${SERVER}:${PORT}'"
-	exit 1
+	usage
 fi
+
+# Calculate dates
+STARTDATE=$(openssl x509 -noout -startdate -in ${TMPFILE} | awk -F= ' /notBefore/ { printf("%s\n",$NF); }')
+ENDDATE=$(openssl x509 -noout -enddate -in ${TMPFILE} | awk -F= ' /notAfter/ { printf("%s\n",$NF); }')
+ENDDATESECS=$(($(date -j -f "%b %d %T %Y %Z" "${ENDDATE}" "+%s") - $(date +%s) | bc))
+ENDDATEDAYS=$(echo "${ENDDATESECS}/(60*60*24)" | bc);
+
+# Output informations
+cat ${TMPFILE}
+echo -e "\nHost / Port: ${SERVER}:${PORT}"
+echo "Start date: ${STARTDATE}"
+echo "End date: ${ENDDATE}"
+echo "Days left: ${ENDDATEDAYS}"
 
 rm ${TMPFILE} 
