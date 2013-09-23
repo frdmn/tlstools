@@ -15,43 +15,42 @@ TMPCSR=".sslcsr.tmpcsr"
 #####
 
 # Write current clipboard to tempfile
-pbpaste > $TMPFILE
+pbpaste > ${TMPFILE}
 
 # Get the first line
-HEAD=`head -1 $TMPFILE`
+HEAD=`head -1 ${TMPFILE}`
 
 # Check clipboard for CSR
-if [[ $HEAD =~ .*CERTIFICATE\ REQUEST.* ]]
+if [[ ${HEAD} =~ .*CERTIFICATE\ REQUEST.* ]]
 then
 	# Clipboard contains CSR \o/
 	# Parse it
-   	openssl asn1parse -in $TMPFILE > $TMPFILE.1 2>/dev/null
+   	openssl asn1parse -in ${TMPFILE} > ${TMPFILE}.1 2>/dev/null
 	
 	# Get the first line
-	HEAD=`head -1 $TMPFILE.1`
+	HEAD=`head -1 ${TMPFILE}.1`
 	
 	# Check for proper decypher result
-	if [[ $HEAD =~ .*rror.* ]]
+	if [[ ${HEAD} =~ .*rror.* ]]
 	then
 		echo "Couldn't decypher CSR, check your clipboard :("
 		exit
 	fi
 else
 	# Clipboard doesn't contain CSR --> create dummy!
-	cat > $TMPCSR << EOHELP
+	cat > ${TMPCSR} << EOHELP
 -----BEGIN NEW CERTIFICATE REQUEST-----
 Remove these lines and replace them with the actuall CSR.
 -----END NEW CERTIFICATE REQUEST-----
 EOHELP
 	# Let the user replace the dummy with the actual CSR
-	$DEFAULTEDITOR $TMPCSR
+	${DEFAULTEDITOR} ${TMPCSR}
 
 	# Store it
-	openssl asn1parse -in $TMPCSR > $TMPFILE.1 2>/dev/null
+	openssl asn1parse -in ${TMPCSR} > ${TMPFILE}.1 2>/dev/null
 fi
 
 # Parse it
-
 # Define data attributes which should get parsed
 DATA=( "commonName" "organizationalUnitName" "organizationName" "localityName" "stateOrProvinceName" "countryName" "emailAddress" )
 
@@ -59,12 +58,10 @@ DATA=( "commonName" "organizationalUnitName" "organizationName" "localityName" "
 for i in "${DATA[@]}"
 do
 	# Get line number of data value
-	DATALINE=$((`grep -n "$i" $TMPFILE.1 | tr -s ' ' | cut -d ' ' -f -1 | rev | cut -c 2- | rev`+1))
+	DATALINE=$((`grep -n "${i}" ${TMPFILE}.1 | tr -s ' ' | cut -d ' ' -f -1 | rev | cut -c 2- | rev`+1))
 	# Get data value
-	DATAVALUE=`sed -n ${DATALINE}p $TMPFILE.1 | tr -s ' ' | cut -d ' ' -f 8-  | cut -c 2-`
-	echo $DATAVALUE
+	DATAVALUE=`sed -n ${DATALINE}p ${TMPFILE}.1 | tr -s ' ' | cut -d ' ' -f 8-  | cut -c 2-`
+	echo ${i}: ${DATAVALUE}
 done
-exit
 
-#openssl req -in .tmp -noout -text
-#rm ./.sslcsr*
+rm ${TMPFILE}*
