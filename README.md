@@ -20,6 +20,8 @@ A bunch of Bash tools to analyze, troubleshoot or inspect SSL certificates, requ
 1. Run the bash script with `sslcsr`
 1. If you don't have a CSR in your clipboard __sslcsr__ will ask you for the actual CSR
 1. Output should look like:
+  
+##
 
     $ ./sslcsr  
     commonName: www.frd.mn  
