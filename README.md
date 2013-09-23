@@ -21,12 +21,12 @@ A bunch of Bash tools to analyze, troubleshoot or inspect SSL certificates, requ
 1. If you don't have a CSR in your clipboard __sslcsr__ will ask you for the actual CSR
 1. Output should look like:
 
-	$ ./sslcsr  
-	commonName: www.frd.mn  
-	organizationalUnitName: Blog  
-	organizationName: Jonas Friedmann  
-	localityName: Wuerzburg  
-	stateOrProvinceName: Bayern  
-	countryName: DE  
-	emailAddress: j@frd.mn  
+    $ ./sslcsr  
+    commonName: www.frd.mn  
+    organizationalUnitName: Blog  
+    organizationName: Jonas Friedmann  
+    localityName: Wuerzburg  
+    stateOrProvinceName: Bayern  
+    countryName: DE  
+    emailAddress: j@frd.mn  
 
