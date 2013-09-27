@@ -36,7 +36,8 @@ fi
 # Calculate dates
 STARTDATE=$(openssl x509 -noout -startdate -in ${TMPFILE} | awk -F= ' /notBefore/ { printf("%s\n",$NF); }')
 ENDDATE=$(openssl x509 -noout -enddate -in ${TMPFILE} | awk -F= ' /notAfter/ { printf("%s\n",$NF); }')
-ENDDATESECS=$(($(date -j -f "%b %d %T %Y %Z" "${ENDDATE}" "+%s") - $(date +%s) | bc))
+# LANG=C => https://github.com/frdmn/ssltools/issues/1
+ENDDATESECS=$(($(LANG=C date -j -f "%b %d %T %Y %Z" "${ENDDATE}" "+%s") - $(date +%s) | bc))
 ENDDATEDAYS=$(echo "${ENDDATESECS}/(60*60*24)" | bc);
 
 # Output informations
