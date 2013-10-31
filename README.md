@@ -9,7 +9,7 @@ A bunch of Bash tools to analyze, troubleshoot or inspect SSL certificates, requ
 # Installation
 
     cd /tmp
-    git clone https://github.com/frdmn/ssltools.git
+    git clone git://github.com/frdmn/ssltools.git
     mv ssltools/bin/ssl* /usr/bin/
     chmod +x /usr/bin/ssl* 
 
