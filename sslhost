@@ -6,21 +6,21 @@
 # Settings
 #####
 
-TMPFILE=".sslhost.tmp"
-SERVER=${1}		# required argument
-PORT=${2:-443}	# optional argument - default: 443
+TMPFILE=$(mktemp /tmp/sslhost-XXXXX)
+SERVER=${1}   # required argument
+PORT=${2:-443}  # optional argument - default: 443
 
 #####
 # DO NOT EDIT BELOW
 #####
 
 usage(){
-	echo "Usage: $0 <host> [port]"
-	exit 1
+  echo "Usage: $0 <host> [port]"
+  exit 1
 }
 
 # Download temp CRT - http://serverfault.com/a/192731/176412
-echo -n | openssl s_client -connect ${SERVER}:${PORT} 2>/dev/null  | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > ${TMPFILE} 
+echo -n | openssl s_client -connect ${SERVER}:${PORT} 2>/dev/null  | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > ${TMPFILE}
 
 # Get the first line
 HEAD=`head -1 ${TMPFILE}`
@@ -28,9 +28,9 @@ HEAD=`head -1 ${TMPFILE}`
 # Check tempfile for CRT
 if [[ ! ${HEAD} =~ .*BEGIN\ CERTIFICATE.* ]]
 then
-	# Error :(
-	echo "Couldn't get certifiacte of '${SERVER}:${PORT}'"
-	usage
+  # Error :(
+  echo "Couldn't get certifiacte of '${SERVER}:${PORT}'"
+  usage
 fi
 
 # Calculate dates
@@ -47,4 +47,4 @@ echo "Start date: ${STARTDATE}"
 echo "End date: ${ENDDATE}"
 echo "Days left: ${ENDDATEDAYS}"
 
-rm ${TMPFILE} 
+rm ${TMPFILE}
