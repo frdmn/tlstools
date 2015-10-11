@@ -55,8 +55,31 @@ confirm() {
   [[ $REPLY =~ ^[Yy]$ ]];
 }
 
+# Set a trap for cleaning up in case of errors or when script exits.
+rollback() {
+  die
+}
+
+# Set our rollback function for unexpected exits.
+trap rollback INT TERM EXIT
+
+# A non-destructive exit for when the script exits naturally.
+safe_exit() {
+  trap - INT TERM EXIT
+  exit
+}
+
+function_exists() {
+  declare -f -F $1 > /dev/null
+  return $?
+}
+
+###
+#
+###
+
 # Print usage
-usage() {
+sub_usage() {
   echo -n "Usage: $ $(basename $0) [OPTION] [COMMAND]...
 
 Description of this script.
@@ -75,61 +98,24 @@ Description of this script.
 "
 }
 
-# Set a trap for cleaning up in case of errors or when script exits.
-rollback() {
-  die
+# "csr" subcommand
+sub_csr() {
+  . "${path}/$(basename $0)-csr"
 }
 
-# Iterate over options breaking -ab into -a -b when needed and --foo=bar into --foo bar
-optstring=h
-unset options
-while (($#)); do
-  case $1 in
-    # If option is of type -ab
-    -[!-]?*)
-      # Loop over each character starting with the second
-      for ((i=1; i < ${#1}; i++)); do
-        c=${1:i:1}
-
-        # Add current char to options
-        options+=("-$c")
-
-        # If option takes a required argument, and it's not the last char make
-        # the rest of the string its argument
-        if [[ $optstring = *"$c:"* && ${1:i+1} ]]; then
-          options+=("${1:i+1}")
-          break
-        fi
-      done
-      ;;
-    # If option is of type --foo=bar
-    --?*=*) options+=("${1%%=*}" "${1#*=}") ;;
-    # add --endopts for --
-    --) options+=(--endopts) ;;
-    # Otherwise, nothing special
-    *) options+=("$1") ;;
-  esac
-  shift
-done
-set -- "${options[@]}"
-unset options
-
-# Set our rollback function for unexpected exits.
-trap rollback INT TERM EXIT
-
-# A non-destructive exit for when the script exits naturally.
-safe_exit() {
-  trap - INT TERM EXIT
-  exit
+# "host" subcommand
+sub_host() {
+  . "${path}/$(basename $0)-host"
 }
 
-# Print help if no arguments were passed.
-[[ $# -eq 0 ]] && set -- "--help"
+###
+#
+###
 
 # Read the options and set stuff
 while [[ $1 = -?* ]]; do
   case $1 in
-    -h|--help) usage >&2; safe_exit ;;
+    -h|--help) sub_usage >&2; safe_exit ;;
     --version) out "$(basename $0) $version"; safe_exit ;;
     -v|--verbose) verbose=1 ;;
     -q|--quiet) quiet=1 ;;
@@ -139,15 +125,22 @@ while [[ $1 = -?* ]]; do
   shift
 done
 
-# Store the remaining part as arguments.
-args=$(echo "$*" | sed 's/^[^ ][^ ]* //')
-
-# Check if subcommand exists
-if [[ -f "${path}/$(basename $0)-$1" ]]; then
-  . "${path}/$(basename $0)-$1" "${args}"
-else
-  usage >&2
-fi
+subcommand=$1
+case $subcommand in
+  "" | "-h" | "--help")
+    sub_usage
+    ;;
+  *)
+    shift
+    if function_exists sub_${subcommand}; then
+      sub_${subcommand} "$@"
+    else
+      err "Error: \"$subcommand\" is not a valid command." >&2
+      echo "    Run \"$(basename $0) --help\" for a list of known sub commands." >&2
+      exit 1
+    fi
+    ;;
+esac
 
 # This has to be run last not to rollback changes we've made.
 safe_exit
