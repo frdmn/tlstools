@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Print usage
+usage() {
+  echo -n "Usage: $ $(basename $0) host [HOST] <PORT>
+
+Display certificate of given [HOST] and show remaining expiration date.
+
+"
+}
+
+# Read the options and set stuff
+while [[ $1 = -?* ]]; do
+  case $1 in
+    -h|--help) usage >&2; safe_exit ;;
+    *)
+      die "invalid option: $1"
+      ;;
+  esac
+  shift
+done
+
+# Argument string to array
+IFS=', ' read -a argsArray <<< "$*"
+
+###
+# Logic below
+###
+
+if [[ -z ${argsArray[0]} ]]; then
+  err "Missing host variable"
+fi
+
+hostName=${argsArray[0]}
+hostPort=${argsArray[1]:-443} # optional argument - default: 443
+hostIP=$(dig ${hostName} +short | head -1)
+
+# Store JSON response by tls.so API
+resJSON=$(curl -s "https://ssldecoder.org/json.php?host=${hostName}:${hostIP}&port=${hostPort}&ciphersuites=0")
+# Parse actual CRT
+jsonCrt=$(echo "$resJSON" | jq '.data.chain."1".key.certificate_pem')
+
+# Check for valid CRT
+if [[ $jsonCrt == "null" ]]; then
+  # Error :(
+  die "Couldn't get certifiacte of '${hostName}:${hostPort}'"
+fi
+
+# Calculate dates
+sslDateStart=$(echo "$resJSON" | jq '.data.chain."1".cert_data.validFrom_time_t' | sed 's/^.//' | sed 's/.$//')
+sslDateEnd=$(echo "$resJSON" | jq '.data.chain."1".cert_data.validTo_time_t' | sed 's/^.//' | sed 's/.$//')
+
+# LANG=C => https://github.com/frdmn/ssltools/issues/1
+sslDateStartSecs=$(echo ${sslDateEnd} - "$(LANG=C date +%s)" | bc)
+sslDateStartDays=$(echo "${sslDateStartSecs}/(60*60*24)" | bc);
+
+# Output informations
+echo "${jsonCrt}" | sed 's/^.//' | sed 's/.$//' | sed 's/\\n/\'$'\n''/g'
+echo -e "Host / Port: ${hostName}:${hostPort}"
+echo "Start date: $(date -r ${sslDateStart})"
+echo "End date: $(date -r ${sslDateEnd})"
+echo "Days left: ${sslDateStartDays}"
+
+# This has to be run last not to rollback changes we've made.
+safe_exit
