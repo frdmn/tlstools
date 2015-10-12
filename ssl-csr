@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# Print usage
+usage() {
+  echo -n "Usage: $ $(basename $0) csr
+
+Parse a TLS certificate sign request from your clipboard and show
+encoded informations as plain text.
+
+"
+}
+
+# Read the options and set stuff
+while [[ $1 = -?* ]]; do
+  case $1 in
+    -h|--help) usage >&2; safe_exit ;;
+    *)
+      die "invalid option: $1"
+      ;;
+  esac
+  shift
+done
+
+###
+# Logic below
+###
+
+tmpFile=$(mktemp /tmp/sslcsr-XXXXX)
+tmpCsr=$(mktemp /tmp/sslcsr-csr-XXXXX)
+
+# Write current clipboard to tempfile
+pbpaste > ${tmpFile}
+
+# Get the first line
+firstline=`head -1 ${tmpFile}`
+
+# Check clipboard for CSR
+if [[ ${firstline} =~ .*CERTIFICATE\ REQUEST.* ]]
+then
+	# Clipboard contains CSR \o/
+	# Parse it
+		openssl asn1parse -in ${tmpFile} > ${tmpFile}.1 2>/dev/null
+
+	# Get the first line
+	firstline=`head -1 ${tmpFile}.1`
+
+	# Check for proper decypher result
+	if [[ ${firstline} =~ .*rror.* ]]
+	then
+		echo "Couldn't decypher CSR, check your clipboard :("
+		exit
+	fi
+else
+	# Clipboard doesn't contain CSR --> create dummy!
+	cat > ${tmpCsr} << EOHELP
+-----BEGIN NEW CERTIFICATE REQUEST-----
+Remove these lines and replace them with the actuall CSR.
+-----END NEW CERTIFICATE REQUEST-----
+EOHELP
+	# Let the user replace the dummy with the actual CSR
+	$EDITOR ${tmpCsr}
+
+	# Store it
+	openssl asn1parse -in ${tmpCsr} > ${tmpFile}.1 2>/dev/null
+fi
+
+# Parse it
+# Define data attributes which should get parsed
+dataAttributes=( "commonName" "organizationalUnitName" "organizationName" "localityName" "stateOrProvinceName" "countryName" "emailAddress" )
+
+# For each attribute
+for i in "${dataAttributes[@]}"
+do
+	# Get line number of data value
+	dataLine=$((`grep -n "${i}" ${tmpFile}.1 | tr -s ' ' | cut -d ' ' -f -1 | rev | cut -c 2- | rev`+1))
+	# Get data value
+	dataValue=`sed -n ${dataLine}p ${tmpFile}.1 | tr -s ' ' | cut -d ' ' -f 8-  | cut -c 2-`
+	echo ${i}: ${dataValue}
+done
+
+rm ${tmpFile}*
+
+# This has to be run last not to rollback changes we've made.
+safe_exit
