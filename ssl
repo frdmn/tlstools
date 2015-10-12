@@ -79,7 +79,7 @@ function_exists() {
 ###
 
 # Print usage
-sub_usage() {
+usage() {
   echo -n "Usage: $ $(basename $0) [OPTION] [COMMAND]...
 
 Description of this script.
@@ -115,7 +115,7 @@ sub_host() {
 # Read the options and set stuff
 while [[ $1 = -?* ]]; do
   case $1 in
-    -h|--help) sub_usage >&2; safe_exit ;;
+    -h|--help) usage >&2; safe_exit ;;
     --version) out "$(basename $0) $version"; safe_exit ;;
     -v|--verbose) verbose=1 ;;
     -q|--quiet) quiet=1 ;;
@@ -128,7 +128,7 @@ done
 subcommand=$1
 case $subcommand in
   "" | "-h" | "--help")
-    sub_usage
+    usage
     ;;
   *)
     shift
