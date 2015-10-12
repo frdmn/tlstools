@@ -56,11 +56,12 @@ sslDateStartSecs=$(echo ${sslDateEnd} - "$(LANG=C date +%s)" | bc)
 sslDateStartDays=$(echo "${sslDateStartSecs}/(60*60*24)" | bc);
 
 # Output informations
-echo "${jsonCrt}" | sed 's/^.//' | sed 's/.$//' | sed 's/\\n/\'$'\n''/g'
-echo -e "Host / Port: ${hostName}:${hostPort}"
-echo "Start date: $(date -r ${sslDateStart})"
-echo "End date: $(date -r ${sslDateEnd})"
-echo "Days left: ${sslDateStartDays}"
+success "Successfully parsed informations:"
+out "${jsonCrt}" | sed 's/^.//' | sed 's/.$//' | sed 's/\\n/\'$'\n''/g'
+out -e "Host / Port: ${hostName}:${hostPort}"
+out "Start date: $(date -r ${sslDateStart})"
+out "End date: $(date -r ${sslDateEnd})"
+out "Days left: ${sslDateStartDays}"
 
 # This has to be run last not to rollback changes we've made.
 safe_exit
