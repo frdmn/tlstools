@@ -29,8 +29,8 @@ Description of this script.
       --version     Output version information and exit
 
  Available commands:
-  csr               Quiet (no output)
-  host              Output more
+  csr               Decode certificate request in cliboard
+  host [host]       Try to parse relevant certificate informations
 
   Run "ssl [command] -h" for further information
 ```
