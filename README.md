@@ -17,6 +17,24 @@ ln -s /usr/local/src/ssltools/ssl /usr/local/bin/ssl
 
 # Usage
 
+```shell
+Usage: $ ssl [OPTION] [COMMAND]...
+
+Description of this script.
+
+ Options:
+  -q, --quiet       Quiet (no output)
+  -v, --verbose     Output more
+  -h, --help        Display this help and exit
+      --version     Output version information and exit
+
+ Available commands:
+  csr               Quiet (no output)
+  host              Output more
+
+  Run "ssl [command] -h" for further information
+```
+
 ### ssl `csr`
 
 1. Copy the CSR that you want to decrypt into your clipboard. _(optional)_
