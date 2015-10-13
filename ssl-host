@@ -30,6 +30,7 @@ IFS=', ' read -a argsArray <<< "$*"
 
 if [[ -z ${argsArray[0]} ]]; then
   err "Missing host variable"
+  safe_exit
 fi
 
 hostName=${argsArray[0]}
