@@ -58,7 +58,7 @@ sslDateStartDays=$(echo "${sslDateStartSecs}/(60*60*24)" | bc);
 # Output informations
 success "Successfully parsed informations:"
 out "${jsonCrt}" | sed 's/^.//' | sed 's/.$//' | sed 's/\\n/\'$'\n''/g'
-out -e "Host / Port: ${hostName}:${hostPort}"
+out "Host / Port: ${hostName}:${hostPort}"
 out "Start date: $(date -r ${sslDateStart})"
 out "End date: $(date -r ${sslDateEnd})"
 out "Days left: ${sslDateStartDays}"
