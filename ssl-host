@@ -7,6 +7,10 @@ usage() {
 Display certificate of given [HOST] and show remaining expiration
 date.
 
+ Options:
+  -c, --only-cert          Only display the certificate
+  -i, --only-information   Only display the CRT information
+
 "
 }
 
@@ -14,6 +18,8 @@ date.
 while [[ $1 = -?* ]]; do
   case $1 in
     -h|--help) usage >&2; safe_exit ;;
+    -c|--only-cert) cert_only=true ;;
+    -i|--only-information) information_only=true ;;
     *)
       die "invalid option: $1"
       ;;
@@ -52,6 +58,16 @@ if [[ $jsonCrt == "null" ]]; then
   safe_exit
 fi
 
+# Prettify JSON output
+jsonCrt=${jsonCrt:1} # remove first character (")
+jsonCrt=${jsonCrt%?} # remove last character (")
+
+# Check for -c switch
+if [[ $cert_only ]]; then
+  out "${jsonCrt}" | sed 's/\\n/\'$'\n''/g'
+  safe_exit
+fi
+
 # Calculate dates
 sslDateStart=$(echo "$resJSON" | ${path}/lib/jq '.data.chain."1".cert_data.validFrom_time_t' | sed 's/^.//' | sed 's/.$//')
 sslDateEnd=$(echo "$resJSON" | ${path}/lib/jq '.data.chain."1".cert_data.validTo_time_t' | sed 's/^.//' | sed 's/.$//')
@@ -60,12 +76,8 @@ sslDateEnd=$(echo "$resJSON" | ${path}/lib/jq '.data.chain."1".cert_data.validTo
 sslDateStartSecs=$(echo ${sslDateEnd} - "$(LANG=C date +%s)" | bc)
 sslDateStartDays=$(echo "${sslDateStartSecs}/(60*60*24)" | bc);
 
-# Output informations
-jsonCrt=${jsonCrt:1} # remove first character (")
-jsonCrt=${jsonCrt%?} # remove last character (")
-
 success "Successfully parsed informations:"
-out "${jsonCrt}" | sed 's/\\n/\'$'\n''/g' # translate \n to newline characters
+[[ $information_only ]] || out "${jsonCrt}" | sed 's/\\n/\'$'\n''/g' # translate \n to newline characters
 out "Host / Port: ${hostName}:${hostPort}"
 out "Start date: $(date -r ${sslDateStart})"
 out "End date: $(date -r ${sslDateEnd})"

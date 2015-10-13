@@ -4,7 +4,7 @@
 set -e
 
 # Version
-version="v1.0.0"
+version="v1.0.1"
 
 # Detect whether output is piped or not.
 [[ -t 1 ]] && piped=0 || piped=1
