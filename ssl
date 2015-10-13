@@ -140,7 +140,7 @@ case $subcommand in
       sub_${subcommand} "$@"
     else
       err "Error: \"$subcommand\" is not a valid command." >&2
-      echo "    Run \"$(basename $0) --help\" for a list of known sub commands." >&2
+      out "    Run \"$(basename $0) --help\" for a list of known sub commands." >&2
       exit 1
     fi
     ;;
