@@ -107,7 +107,7 @@ sub_csr() {
 
 # "host" subcommand
 sub_host() {
-  . "${path}/$(basename $0)-host"
+  . "${path}-host"
 }
 
 ###
