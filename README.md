@@ -175,6 +175,7 @@ Usage: $ ssl host [HOST] <PORT>
 
 ```shell
 $ ssl host git.frd.mn
+ ✔  Successfully parsed informations
 -----BEGIN CERTIFICATE-----
 MIIDPDCCAiQCCQCMdIDa4khx8DANBgkqhkiG9w0BAQUFADBgMQswCQYDVQQGEwJE
 RTEPMA0GA1UECBMGQmF5ZXJuMRMwEQYDVQQHEwpFaWJlbHN0YWR0MRIwEAYDVQQK
