@@ -82,7 +82,7 @@ function_exists() {
 
 # Print usage
 usage() {
-  echo -n "Usage: $ $(basename $0) [OPTION] [COMMAND]...
+  echo -n "Usage: $ $(basename $0) [OPTION] [COMMAND] <COMMAND OPTIONS>...
 
  SSL related Bash toolbelt. Check the available sub commands
  below for further informations what you can achieve with this

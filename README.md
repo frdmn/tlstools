@@ -37,6 +37,13 @@ Description of this script.
 
 ### ssl `csr`
 
+```shell
+Usage: $ ssl csr
+
+ Parse a TLS certificate sign request from your clipboard and show
+ encoded informations as plain text.
+ ```
+
 1. Copy the CSR that you want to decrypt into your clipboard. _(optional)_
 1. Run the bash script with `ssl csr`
 1. If you don't have a CSR in your clipboard, it'll will ask you for the actual CSR
@@ -54,6 +61,17 @@ emailAddress: j@frd.mn
 ```
 
 ### ssl `host`
+
+```shell
+Usage: $ ssl host [HOST] <PORT>
+
+ Display certificate of given [HOST] and show remaining expiration
+ date.
+
+ Options:
+  -c, --only-cert          Only display the certificate
+  -i, --only-information   Only display the CRT information
+```
 
 1. Run the bash script with `ssl host <hostname>`
 1. Output should look like:
