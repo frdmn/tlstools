@@ -51,7 +51,7 @@ then
 	if [[ ${firstline} =~ .*rror.* ]]
 	then
 		err "Couldn't decypher CSR, check your clipboard :("
-		exit
+		exit 1
 	fi
 else
 	# Clipboard doesn't contain CSR --> create dummy!
