@@ -40,7 +40,7 @@ hostIP=$(dig ${hostName} +short | head -1)
 # Store JSON response by tls.so API
 resJSON=$(curl -s "https://ssldecoder.org/json.php?host=${hostName}:${hostIP}&port=${hostPort}&ciphersuites=0")
 # Parse actual CRT
-jsonCrt=$(echo "$resJSON" | jq '.data.chain."1".key.certificate_pem')
+jsonCrt=$(echo "$resJSON" | ${path}/lib/jq '.data.chain."1".key.certificate_pem')
 
 # Check for valid CRT
 if [[ $jsonCrt == "null" ]]; then
@@ -50,8 +50,8 @@ if [[ $jsonCrt == "null" ]]; then
 fi
 
 # Calculate dates
-sslDateStart=$(echo "$resJSON" | jq '.data.chain."1".cert_data.validFrom_time_t' | sed 's/^.//' | sed 's/.$//')
-sslDateEnd=$(echo "$resJSON" | jq '.data.chain."1".cert_data.validTo_time_t' | sed 's/^.//' | sed 's/.$//')
+sslDateStart=$(echo "$resJSON" | ${path}/lib/jq '.data.chain."1".cert_data.validFrom_time_t' | sed 's/^.//' | sed 's/.$//')
+sslDateEnd=$(echo "$resJSON" | ${path}/lib/jq '.data.chain."1".cert_data.validTo_time_t' | sed 's/^.//' | sed 's/.$//')
 
 # LANG=C => https://github.com/frdmn/ssltools/issues/1
 sslDateStartSecs=$(echo ${sslDateEnd} - "$(LANG=C date +%s)" | bc)
