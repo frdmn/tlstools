@@ -4,8 +4,8 @@
 usage() {
   echo -n "Usage: $ $(basename $0) host [HOST] <PORT>
 
-Display certificate of given [HOST] and show remaining expiration
-date.
+ Display certificate of given [HOST] and show remaining expiration
+ date.
 
  Options:
   -c, --only-cert          Only display the certificate

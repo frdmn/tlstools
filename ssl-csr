@@ -4,8 +4,8 @@
 usage() {
   echo -n "Usage: $ $(basename $0) csr
 
-Parse a TLS certificate sign request from your clipboard and show
-encoded informations as plain text.
+ Parse a TLS certificate sign request from your clipboard and show
+ encoded informations as plain text.
 
 "
 }
