@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# Disable "exit immediatly"
+set +e
+
+# Overwrite sub command usage
+usage() {
+  echo -n "Usage: $ $(basename $0) chain [HOST] <PORT>
+
+ Attempt to fix certificate chain of given certficate.
+
+"
+}
+
+# Read the options and set stuff
+while [[ $1 = -?* ]]; do
+  case $1 in
+    -h|--help) usage >&2; safe_exit ;;
+    *)
+      die "invalid option: $1"
+      ;;
+  esac
+  shift
+done
+
+# Argument string to array
+#IFS=', ' read -a argsArray <<< "$*"
+
+# Redeclare path variable
+path=${path:?}
+
+###
+# Logic below
+###
+
+tmpFile=$(mktemp /tmp/sslchain-XXXXX)
+
+# Write current clipboard to tempfile
+pbpaste > ${tmpFile}.crt
+
+# Get the first line
+firstline=$(head -1 ${tmpFile}.crt)
+
+# Check clipboard for CSR
+if [[ ! ${firstline} =~ .*BEGIN\ CERTIFICATE.* ]]; then
+	# Clipboard doesn't contain CSR --> create dummy!
+	cat > ${tmpFile}.crt << EOHELP
+-----BEGIN CERTIFICATE-----
+Remove these lines and replace them with the actual certificate.
+-----END CERTIFICATE-----
+EOHELP
+	# Let the user replace the dummy with the actual certificate
+	$EDITOR ${tmpFile}.crt
+fi
+
+# Store it
+openssl asn1parse -in ${tmpFile}.crt > ${tmpFile}.validated 2>/dev/null
+
+# Get the first line
+firstline=$(head -1 ${tmpFile}.validated)
+
+# Check for proper decode result
+if [[ ${firstline} =~ .*rror.* || -z ${firstline} ]]; then
+	err "Couldn't decode CRT, check your clipboard :("
+	exit 1
+fi
+
+# Fix chain
+${path}/lib/cert-chain-resolver.sh -i -o ${tmpFile}.fixed ${tmpFile}.crt &>/dev/null
+fixedCrt=$(cat ${tmpFile}.fixed)
+
+# Remove temporary files
+rm ${tmpFile}*
+
+success "Successfuly fixed intermediate chain:"
+out "${fixedCrt}"
+
+# This has to be run last not to rollback changes we've made.
+safe_exit

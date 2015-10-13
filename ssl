@@ -15,6 +15,7 @@ quiet=0
 verbose=0
 export args=()
 path=$(dirname "$(readlink $0)")
+
 # Make sure default editor is set, fallback to "vi"
 EDITOR="${EDITOR:-vi}"
 
@@ -63,7 +64,7 @@ rollback() {
 }
 
 # Set our rollback function for unexpected exits.
-trap rollback INT TERM EXIT
+#trap rollback INT TERM EXIT
 
 # A non-destructive exit for when the script exits naturally.
 safe_exit() {
@@ -95,11 +96,18 @@ usage() {
       --version     Output version information and exit
 
  Available commands:
+  chain             Try to fix an incomplete intermediate chain
   csr               Decode certificate request in cliboard
   host [host]       Try to parse relevant certificate informations
 
   Run \"$(basename $0) [command] -h\" for further information
 "
+}
+
+# "chain" subcommand
+sub_chain() {
+  # shellcheck source=/dev/null
+  . "${path}/$(basename $0)-chain"
 }
 
 # "csr" subcommand
