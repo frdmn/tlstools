@@ -61,8 +61,11 @@ sslDateStartSecs=$(echo ${sslDateEnd} - "$(LANG=C date +%s)" | bc)
 sslDateStartDays=$(echo "${sslDateStartSecs}/(60*60*24)" | bc);
 
 # Output informations
+jsonCrt=${jsonCrt:1} # remove first character (")
+jsonCrt=${jsonCrt%?} # remove last character (")
+
 success "Successfully parsed informations:"
-out "${jsonCrt}" | sed 's/^.//' | sed 's/.$//' | sed 's/\\n/\'$'\n''/g'
+out "${jsonCrt}" | sed 's/\\n/\'$'\n''/g' # translate \n to newline characters
 out "Host / Port: ${hostName}:${hostPort}"
 out "Start date: $(date -r ${sslDateStart})"
 out "End date: $(date -r ${sslDateEnd})"
