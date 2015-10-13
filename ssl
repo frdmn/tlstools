@@ -102,11 +102,13 @@ Description of this script.
 
 # "csr" subcommand
 sub_csr() {
+  # shellcheck source=/dev/null
   . "${path}/$(basename $0)-csr"
 }
 
 # "host" subcommand
 sub_host() {
+  # shellcheck source=/dev/null
   . "${path}/$(basename $0)-host"
 }
 
