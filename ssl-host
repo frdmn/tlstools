@@ -24,6 +24,9 @@ done
 # Argument string to array
 IFS=', ' read -a argsArray <<< "$*"
 
+# Redeclare path variable
+path=${path:?}
+
 ###
 # Logic below
 ###

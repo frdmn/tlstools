@@ -13,7 +13,7 @@ version="v1.0.0"
 force=0
 quiet=0
 verbose=0
-args=()
+export args=()
 path=$(dirname "$(readlink $0)")
 # Make sure default editor is set, fallback to "vi"
 EDITOR="${EDITOR:-vi}"

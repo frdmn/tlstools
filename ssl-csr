@@ -22,7 +22,7 @@ while [[ $1 = -?* ]]; do
 done
 
 # Argument string to array
-IFS=', ' read -a argsArray <<< "$*"
+#IFS=', ' read -a argsArray <<< "$*"
 
 ###
 # Logic below
