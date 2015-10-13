@@ -14,7 +14,7 @@ force=0
 quiet=0
 verbose=0
 args=()
-path=$(dirname "$(realpath $0)")
+path=$(readlink $0)
 # Make sure default editor is set, fallback to "vi"
 EDITOR="${EDITOR:-vi}"
 
