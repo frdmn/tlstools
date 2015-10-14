@@ -4,7 +4,8 @@
  * the LICENSE file for more information. All rights reserved.
  */
 
-var colors = require('colors');
+var colors = require('colors'),
+    request = require('request'),
     dns = require('dns');
 
 module.exports = {
@@ -57,6 +58,30 @@ module.exports = {
         }
       } else {
         return cb(false);
+      }
+    });
+  },
+
+  /**
+   * Call SSLdecoder.org easily via JSON API
+   * @param  {string}      input hostname
+   * @param  {string}      input IP
+   * @param  {string}      input port
+   * @param  {Function}    callback
+   * @return {string|BOOL}
+   */
+  sslDecoderApi: function(hostname, ip, port, cb){
+    var url = 'https://ssldecoder.org/json.php?host=' + hostname + ':' + ip + '&port=' + port + '&ciphersuites=0';
+
+    request(url, function (error, response, body) {
+      if (error){
+        return cb(false);
+      }
+
+      if (response.statusCode == 200) {
+        return cb(JSON.parse(body));
+      } else {
+        return cb(error);
       }
     });
   }
