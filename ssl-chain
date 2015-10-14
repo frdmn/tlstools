@@ -47,8 +47,7 @@ pbpaste > ${inputFile}
 if [[ $input_file && -z ${argsArray[0]} ]]; then
   err "Missing --input value"
   safe_exit
-else
-
+elif [[ $input_file ]]; then
   if [[ ! -f ${argsArray[0]} ]]; then
     err "Couldn't find input file \"${argsArray[0]}\""
     safe_exit
