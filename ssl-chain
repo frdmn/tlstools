@@ -9,6 +9,9 @@ usage() {
 
  Attempt to fix certificate chain of given certficate.
 
+ Options:
+  -i, --input       Specify input file
+
 "
 }
 
@@ -16,6 +19,7 @@ usage() {
 while [[ $1 = -?* ]]; do
   case $1 in
     -h|--help) usage >&2; safe_exit ;;
+    -i|--input) input_file=true ;;
     *)
       die "invalid option: $1"
       ;;
@@ -24,7 +28,7 @@ while [[ $1 = -?* ]]; do
 done
 
 # Argument string to array
-#IFS=', ' read -a argsArray <<< "$*"
+IFS=', ' read -a argsArray <<< "$*"
 
 # Redeclare path variable
 path=${path:?}
@@ -34,30 +38,45 @@ path=${path:?}
 ###
 
 tmpFile=$(mktemp /tmp/sslchain-XXXXX)
+inputFile=${tmpFile}
 
 # Write current clipboard to tempfile
-pbpaste > ${tmpFile}.crt
+pbpaste > ${inputFile}
+
+# Check for --input requirements
+if [[ $input_file && -z ${argsArray[0]} ]]; then
+  err "Missing --input value"
+  safe_exit
+else
+
+  if [[ ! -f ${argsArray[0]} ]]; then
+    err "Couldn't find input file \"${argsArray[0]}\""
+    safe_exit
+  else
+    inputFile=${argsArray[0]}
+  fi
+fi
 
 # Get the first line
-firstline=$(head -1 ${tmpFile}.crt)
+firstline=$(head -1 ${inputFile})
 
 # Check clipboard for CSR
-if [[ ! ${firstline} =~ .*BEGIN\ CERTIFICATE.* ]]; then
+if [[ ! $input_file && ! ${firstline} =~ .*BEGIN\ CERTIFICATE.* ]]; then
 	# Clipboard doesn't contain CSR --> create dummy!
-	cat > ${tmpFile}.crt << EOHELP
+	cat > ${tmpFile} << EOHELP
 -----BEGIN CERTIFICATE-----
 Remove these lines and replace them with the actual certificate.
 -----END CERTIFICATE-----
 EOHELP
 	# Let the user replace the dummy with the actual certificate
-	$EDITOR ${tmpFile}.crt
+	$EDITOR ${tmpFile}
 fi
 
 # Store it
-openssl asn1parse -in ${tmpFile}.crt > ${tmpFile}.validated 2>/dev/null
+openssl asn1parse -in ${inputFile} > ${inputFile}.validated 2>/dev/null
 
 # Get the first line
-firstline=$(head -1 ${tmpFile}.validated)
+firstline=$(head -1 ${inputFile}.validated)
 
 # Check for proper decode result
 if [[ ${firstline} =~ .*rror.* || -z ${firstline} ]]; then
@@ -66,11 +85,11 @@ if [[ ${firstline} =~ .*rror.* || -z ${firstline} ]]; then
 fi
 
 # Fix chain
-${path}/lib/cert-chain-resolver.sh -i -o ${tmpFile}.fixed ${tmpFile}.crt &>/dev/null
-fixedCrt=$(cat ${tmpFile}.fixed)
+${path}/lib/cert-chain-resolver.sh -i -o ${inputFile}.fixed ${inputFile} &>/dev/null
+fixedCrt=$(cat ${inputFile}.fixed)
 
 # Remove temporary files
-rm ${tmpFile}*
+rm ${inputFile}.* ${tmpFile}
 
 success "Successfuly fixed intermediate chain:"
 out "${fixedCrt}"
