@@ -37,8 +37,8 @@ module.exports = {
 
   /**
    * Resolve an DNS hostname to it's actual IP address
-   * @param  {string} input hostname
-   * @param  {function} callback
+   * @param  {string}      input hostname
+   * @param  {function}    callback
    * @return {string|BOOL}
    */
   resolveDns: function(hostname, cb){
