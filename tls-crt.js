@@ -7,7 +7,7 @@
  */
 
 var cmdr = require('commander'),
-    helpers = require('./helper');
+    helpers = require('./lib/helper');
 
 /* Logic */
 
