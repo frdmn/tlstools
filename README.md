@@ -56,6 +56,7 @@ Assuming you have copied the certificate to check into your system clipboard:
 
 ```shell
 $ ssl chain -c
+ ✔ Successfully parsed information:
 -----BEGIN CERTIFICATE-----
 MIIDnzCCAyWgAwIBAgIQWyXOaQfEJlVm0zkMmalUrTAKBggqhkjOPQQDAzCBhTEL
 MAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UE
@@ -101,8 +102,6 @@ lztSjxLCdJcBns/hbWjYk7mcJPuWJ0gBnOqUP3CYQbNzUTcp6PYBerknuCRR2RFo
 kAWvL54TnJM/ev/m6+loeYyv4Lb67psSE/5FjNJ80zXrIRKT/mZ1JioVhCb3ZsnL
 jbsJQdQYr7GzEPUQyp2aDrV1aug=
 -----END CERTIFICATE-----
-
- ✔ Successfully fixed intermediate chain from clipboard.
 ```
 
 ### ssl `crt`

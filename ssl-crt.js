@@ -34,8 +34,6 @@ helpers.resolveDns(inputHostname, function(inputIp){
       helpers.die('Couldn\'t get certificate of ' + inputHostname + ':' + inputPort);
     }
 
-    helpers.success('Successfully parsed information:');
-
     // Store particular info
     var jsonCrt = response.data.chain['1'].key.certificate_pem,
         jsonStartDate = response.data.chain['1'].cert_data.validFrom_time_t,
@@ -57,6 +55,8 @@ helpers.resolveDns(inputHostname, function(inputIp){
       helpers.out('End date: ' + realEndDate);
       helpers.out('Remaining days: ' + realRemainingDays);
     }
+    
+    helpers.success('Successfully parsed information:');
 
     // Exit successfully
     helpers.quit(0);
