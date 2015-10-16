@@ -15,8 +15,8 @@ var colors = require('colors'),
 module.exports = {
   /**
    * Function to print messages to stdout
-   * @param  {string} msg
-   * @return {bool} true
+   * @param  {String} msg
+   * @return {Bool}   true
    */
   out: function(msg){
     console.log(msg);
@@ -24,8 +24,8 @@ module.exports = {
   },
   /**
    * Return success indicator and message
-   * @param  {string} message to return
-   * @return {bool} true
+   * @param  {String} message to return
+   * @return {Bool}   true
    */
   success: function (msg) {
     console.log(' ✔ '.bold.green + msg);
@@ -34,8 +34,8 @@ module.exports = {
 
   /**
    * Return error indicator and message
-   * @param  {string} message to return
-   * @return {bool} true
+   * @param  {String} message to return
+   * @return {Bool}   true
    */
   error: function (msg) {
     console.error(' ✖ '.bold.red + msg);
@@ -45,7 +45,7 @@ module.exports = {
   /**
    * Quit runtime and return error code
    * @param {integer} error code
-   * @return {bool} true
+   * @return {Bool}   true
    */
    quit: function (code) {
      process.exit(code);
@@ -55,8 +55,8 @@ module.exports = {
   /**
    * Let script die by returning error exit code as well as
    * error message by executing error()
-   * @param  {string} message to return
-   * @return {bool} true
+   * @param  {String} message to return
+   * @return {Bool}   true
    */
   die: function (msg) {
     // Call function from above to print error message
@@ -67,9 +67,9 @@ module.exports = {
 
   /**
    * Resolve an DNS hostname to it's actual IP address
-   * @param  {string}      input hostname
-   * @param  {function}    callback
-   * @return {string|BOOL}
+   * @param  {String}      input hostname
+   * @param  {Function}    callback
+   * @return {String|BOOL}
    */
   resolveDns: function(hostname, cb){
     dns.resolve4(hostname, function (err, addresses) {
@@ -93,11 +93,11 @@ module.exports = {
 
   /**
    * Call SSLdecoder.org easily via JSON API
-   * @param  {string}      input hostname
-   * @param  {string}      input IP
-   * @param  {string}      input port
+   * @param  {String}      input hostname
+   * @param  {String}      input IP
+   * @param  {String}      input port
    * @param  {Function}    callback
-   * @return {string|BOOL}
+   * @return {String|BOOL}
    */
   sslDecoderApi: function(hostname, ip, port, cb){
     var url = 'https://ssldecoder.org/json.php?host=' + hostname + ':' + ip + '&port=' + port + '&ciphersuites=0';
@@ -117,7 +117,7 @@ module.exports = {
 
   /**
    * Access OS clipboard synchronously and return content
-   * @return {string}
+   * @return {String} clipboard content
    */
   getClipboard: function(){
     return clipboard.paste();
@@ -125,8 +125,8 @@ module.exports = {
 
   /**
    * Load content of file synchronously
-   * @param  {string} filename (incl. path) to load
-   * @return {string} content of fileå
+   * @param  {String} filename (incl. path) to load
+   * @return {String} content of fileå
    */
   getFileContent: function(file){
     return fs.readFileSync(file, 'utf8');
@@ -134,8 +134,8 @@ module.exports = {
 
   /**
    * Load content of file synchronously
-   * @param  {string} filename (incl. path) to load
-   * @return {string} content of file
+   * @param  {String} filename (incl. path) to load
+   * @return {String} content of file
    */
   writeFileContent: function(file, content){
     return fs.writeFileSync(file, content, 'utf8');
@@ -146,9 +146,9 @@ module.exports = {
    * via the 'haystack' parameter. In case of successful
    * extraction, it returns the fixed intermediate chain
    * orwise it'll return 'false'.
-   * @param  {string} haystack
-   * @param  {function} cb
-   * @return {string|BOOL} result
+   * @param  {String}      haystack
+   * @param  {Function}    cb
+   * @return {String|Bool} result
    */
   attemptToFixChain: function (haystack, cb){
     var libPath = path.join(__dirname, 'lib'),
