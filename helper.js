@@ -5,6 +5,8 @@
  */
 
 var colors = require('colors'),
+    clipboard = require('copy-paste'),
+    fs = require('fs'),
     request = require('request'),
     dns = require('dns');
 
@@ -91,5 +93,31 @@ module.exports = {
         return cb(error);
       }
     });
+  },
+
+  /**
+   * Access OS clipboard synchronously and return content
+   * @return {string}
+   */
+  getClipboard: function(){
+    return clipboard.paste();
+  },
+
+  /**
+   * Load content of file synchronously
+   * @param  {string} filename (incl. path) to load
+   * @return {string} content of fileå
+   */
+  getFileContent: function(file){
+    return fs.readFileSync(file, 'utf8');
+  },
+
+  /**
+   * Load content of file synchronously
+   * @param  {string} filename (incl. path) to load
+   * @return {string} content of file
+   */
+  writeFileContent: function(file, content){
+    return fs.writeFileSync(file, content, 'utf8');
   }
 };
