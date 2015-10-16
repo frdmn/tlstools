@@ -18,5 +18,5 @@ cmdr
   .version('1.1.0')
   .command('chain', 'attempt to fix incomplete certificate chain')
   .command('csr <query>', 'decode certificate request information')
-  .command('host', 'display TLS information for given hostname')
+  .command('info <hostname>', 'display TLS information for given hostname')
   .parse(process.argv);
