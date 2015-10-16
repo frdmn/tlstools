@@ -13,9 +13,9 @@ var cmdr = require('commander'),
 
 // Setup sub command options
 cmdr
-  .option('-i, --input-file <file>', 'input file that contains certificate')
-  .option('-H, --hostname <host>', 'hostname to check')
-  .option('-p, --port <port>', 'optional port, otherwise 443')
+  .option('-f, --filename <file>', 'search certificate in file')
+  .option('-H, --hostname <host[:port]>', 'use certificate from remote hostname')
+  .option('-c, --clipboard', 'search certificate in clipboard')
   .parse(process.argv);
 
 // Declare variables
@@ -23,50 +23,64 @@ var haystack;
 
 // If "--hostname" is set
 if(cmdr.hostname){
-  helpers.resolveDns(cmdr.hostname, function(ip){
-    var hostPort = cmdr.port ? cmdr.port : '443';
-    helpers.sslDecoderApi(cmdr.hostname, ip, hostPort, function(response){
+  var socketName = cmdr.hostname,
+      socketArray = socketName.split(':');
+
+  // Extract hostname from socketArray
+  var hostName = socketArray[0];
+
+  // If socketArray > 1 then it contains a port
+  if (socketArray.length > 1){
+    var hostPort = socketArray[1];
+  } else {
+    var hostPort = '443';
+  }
+
+  // Resolve DNS name
+  helpers.resolveDns(hostName, function(ip){
+    // Connect to ssldecoder.org API
+    helpers.sslDecoderApi(hostName, ip, hostPort, function(response){
+      // If 'data' element, select and store certificate
       if (response.data) {
         haystack = response.data.chain['1'].key.certificate_pem;
         helpers.attemptToFixChain(haystack, function(repairResponse){
           if (repairResponse !== false) {
             helpers.out(repairResponse);
-            helpers.success('Successfully fixed intermediate chain for "' + cmdr.hostname + '".');
+            helpers.success('Successfully fixed intermediate chain for "' + hostName + '".');
             helpers.quit(0);
           }
         });
       } else {
-        helpers.error('Couldn\'t extract certificate for "' + cmdr.hostname + ':' + hostPort + '".');
+        helpers.error('Couldn\'t extract certificate for "' + hostName + ':' + hostPort + '".');
         helpers.quit(1);
       }
     });
   });
-} else {
-  // If "--input-file" is set
-  if (cmdr.inputFile) {
-    haystack = helpers.getFileContent(cmdr.inputFile);
-    helpers.attemptToFixChain(haystack, function(repairResponse){
-      if (repairResponse !== false) {
-        helpers.out(repairResponse);
-        helpers.success('Successfully fixed intermediate from file "' + cmdr.inputFile + '" chain.');
-        helpers.quit(0);
-      } else {
-        helpers.error('Couldn\'t extract certificate from file "' + cmdr.inputFile + '".');
-        helpers.quit(1);
-      }
-    });
-  // otherwise check clipboard...
-  } else {
-    haystack = helpers.getClipboard();
-    helpers.attemptToFixChain(haystack, function(repairResponse){
-      if (repairResponse !== false) {
-        helpers.out(repairResponse);
-        helpers.success('Successfully fixed intermediate chain from clipboard.');
-        helpers.quit(0);
-      } else {
-        helpers.error('Couldn\'t extract certificate from clipboard.');
-        helpers.quit(1);
-      }
-    });
-  }
-}
+// If "--input-file" is set
+} else if (cmdr.filename) {
+  var fileName = cmdr.filename;
+  haystack = helpers.getFileContent(fileName);
+  helpers.attemptToFixChain(haystack, function(repairResponse){
+    if (repairResponse !== false) {
+      helpers.out(repairResponse);
+      helpers.success('Successfully fixed intermediate from file "' + fileName + '" chain.');
+      helpers.quit(0);
+    } else {
+      helpers.error('Couldn\'t extract certificate from file "' + fileName + '".');
+      helpers.quit(1);
+    }
+  });
+// otherwise check clipboard...
+} else if (cmdr.clipboard) {
+  haystack = helpers.getClipboard();
+  helpers.attemptToFixChain(haystack, function(repairResponse){
+    if (repairResponse !== false) {
+      helpers.out(repairResponse);
+      helpers.success('Successfully fixed intermediate chain from clipboard.');
+      helpers.quit(0);
+    } else {
+      helpers.error('Couldn\'t extract certificate from clipboard.');
+      helpers.quit(1);
+    }
+  });
+} 
