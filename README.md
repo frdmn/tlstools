@@ -26,8 +26,8 @@ Usage: tls [options] [command]
 Commands:
 
   chain                  attempt to fix incomplete certificate chain
-  csr                    decode certificate request information
   crt <hostname> [port]  display TLS information for given hostname
+  csr                    decode certificate request information
   help [cmd]             display help for [cmd]
 
 Options:
@@ -60,7 +60,6 @@ Assuming you have copied the certificate to check into your system clipboard:
 
 ```shell
 $ tls chain -c
- ✔ Successfully parsed information:
 -----BEGIN CERTIFICATE-----
 MIIDnzCCAyWgAwIBAgIQWyXOaQfEJlVm0zkMmalUrTAKBggqhkjOPQQDAzCBhTEL
 MAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UE
@@ -106,6 +105,8 @@ lztSjxLCdJcBns/hbWjYk7mcJPuWJ0gBnOqUP3CYQbNzUTcp6PYBerknuCRR2RFo
 kAWvL54TnJM/ev/m6+loeYyv4Lb67psSE/5FjNJ80zXrIRKT/mZ1JioVhCb3ZsnL
 jbsJQdQYr7GzEPUQyp2aDrV1aug=
 -----END CERTIFICATE-----
+
+ ✔ Successfully fixed intermediate chain from clipboard
 ```
 
 ### tls `crt`
@@ -129,7 +130,6 @@ Show certificate informations from remote host "frd.mn":
 
 ```shell
 $ tls crt frd.mn
-✔ Successfully parsed information:
 -----BEGIN CERTIFICATE-----
 MIIGLzCCBdagAwIBAgIQH3be7EHzH3zHdBvhyXC4wDAKBggqhkjOPQQDAjCBkjEL
 MAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UE
@@ -171,6 +171,7 @@ Host/port: frd.mn:443
 Start date: Sat Sep 26 2015 02:00:00 GMT+0200 (CEST)
 End date: Thu Dec 31 2015 00:59:59 GMT+0100 (CET)
 Remaining days: 96
+✔ Successfully parsed information
 ```
 
 ### tls `csr`
@@ -222,7 +223,7 @@ Subject:
  - OU: Mail system
  - CN: chewbacca.yeahwh.at
  - emailAddress: postmaster@yeahwh.at
- ✔ Successfully decoded information from clipboard.
+ ✔ Successfully decoded information from clipboard
 ```
 
 # Credits
