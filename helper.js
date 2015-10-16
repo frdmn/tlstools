@@ -195,7 +195,7 @@ module.exports = {
 
   decodeCsrInformations: function(input, cb){
     // Try to search and extract certificate sign request
-    var regexMatcher = input.match(/-----BEGIN NEW CERTIFICATE REQUEST-----((.|\n)*?)-----END NEW CERTIFICATE REQUEST-----/g);
+    var regexMatcher = input.match(/-----BEGIN (NEW )?CERTIFICATE REQUEST-----((.|\n)*?)-----END (NEW )?CERTIFICATE REQUEST-----/g);
 
     // If there's an certificate sign request ...
     if (regexMatcher && regexMatcher[0]){
