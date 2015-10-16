@@ -15,7 +15,7 @@ var cmdr = require('commander');
 
 // Initiate the commander.js argument setup
 cmdr
-  .version('1.1.0')
+  .version('1.1.1')
   .command('chain', 'attempt to fix incomplete certificate chain')
   .command('crt <hostname> [port]', 'display TLS information for given hostname')
   .command('csr', 'decode certificate request information')
