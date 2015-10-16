@@ -45,7 +45,7 @@ if(cmdr.hostname){
         /* jshint -W106 */
         haystack = response.data.chain['1'].key.certificate_pem;
         /* jshint +W106 */
-        helpers.attemptToFixChain(haystack, function(repairResponse){
+        helpers.resolveCertificateChain(haystack, function(repairResponse){
           if (repairResponse !== false) {
             helpers.out(repairResponse);
             helpers.success('Successfully fixed intermediate chain for "' + hostName + '"');
@@ -64,7 +64,7 @@ if(cmdr.hostname){
   helpers.checkIfFileExists(fileName, function(exists){
     if (exists){
       haystack = helpers.getFileContent(fileName);
-      helpers.attemptToFixChain(haystack, function(repairResponse){
+      helpers.resolveCertificateChain(haystack, function(repairResponse){
         if (repairResponse !== false) {
           helpers.out(repairResponse);
           helpers.success('Successfully fixed intermediate from file "' + fileName + '" chain');
@@ -82,7 +82,7 @@ if(cmdr.hostname){
 // otherwise check clipboard...
 } else if (cmdr.clipboard) {
   haystack = helpers.getClipboard();
-  helpers.attemptToFixChain(haystack, function(repairResponse){
+  helpers.resolveCertificateChain(haystack, function(repairResponse){
     if (repairResponse !== false) {
       helpers.out(repairResponse);
       helpers.success('Successfully fixed intermediate chain from clipboard');
