@@ -7,6 +7,8 @@
 var colors = require('colors'),
     clipboard = require('copy-paste'),
     fs = require('fs'),
+    sh = require('shelljs'),
+    path = require('path'),
     request = require('request'),
     dns = require('dns');
 
@@ -119,5 +121,32 @@ module.exports = {
    */
   writeFileContent: function(file, content){
     return fs.writeFileSync(file, content, 'utf8');
+  },
+
+  attemptToFixChain: function (haystack, cb){
+    var libPath = path.join(__dirname, 'lib'),
+        resolveChainLib = path.join(libPath, 'cert-chain-resolver.sh');
+
+    // Try to search and extract certificate
+    var regexMatcher = haystack.match(/-----BEGIN CERTIFICATE-----((.|\n)*?)-----END CERTIFICATE-----/g);
+
+    // Abort if not a single one found
+    if (!regexMatcher || !regexMatcher[0]){
+      helper.die('Couldn\'t extract certificate');
+    }
+
+    var foundCrt = regexMatcher[0];
+
+    // Create temporary file and write CRT into it
+    var tmpFileName = sh.exec('mktemp /tmp/ssltools-chain-XXXXXX', { silent: true }).output.trim();
+    module.exports.writeFileContent(tmpFileName, foundCrt);
+
+    // Attempt to fix certificate chain using "cert-chain-resolver.sh"
+    sh.exec(resolveChainLib + ' -i -o ' + tmpFileName + '.fixed ' + tmpFileName, { silent: true }, function(code, output) {
+      var response = module.exports.getFileContent(tmpFileName + '.fixed');
+      // Get rid of temporary files
+      sh.exec('rm ' + tmpFileName + '*', { silent: true });
+      return cb(response);
+    });
   }
 };
