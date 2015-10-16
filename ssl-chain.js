@@ -83,4 +83,7 @@ if(cmdr.hostname){
       helpers.quit(1);
     }
   });
-} 
+} else {
+  helpers.error('No option passed.');
+  cmdr.help();
+}
