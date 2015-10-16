@@ -7,6 +7,10 @@ Command line tool to analyze, troubleshoot or inspect TLS certificates, requests
 * `tls crt` - get renewal informations and the CRT (certificate) itself based on a host
 * `tls csr` - simple decypher and parse informations out a CSR (Certificate Sign Request)
 
+# Requirements
+
+* NodeJS
+
 # Installation
 
 ```shell
