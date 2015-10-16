@@ -14,6 +14,15 @@ var colors = require('colors'),
 
 module.exports = {
   /**
+   * Function to print messages to stdout
+   * @param  {string} msg
+   * @return {bool} true
+   */
+  out: function(msg){
+    console.log(msg);
+    return true;
+  },
+  /**
    * Return success indicator and message
    * @param  {string} message to return
    * @return {bool} true
