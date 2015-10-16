@@ -29,5 +29,11 @@
   "bugs": {
     "url": "https://github.com/frdmn/ssltools/issues"
   },
-  "homepage": "https://github.com/frdmn/ssltools#readme"
+  "homepage": "https://github.com/frdmn/ssltools#readme",
+  "bin": {
+    "ssl": "ssl.js",
+    "ssl-chain": "ssl-chain.js",
+    "ssl-crt": "ssl-crt.js",
+    "ssl-csr": "ssl-csr.js"
+  }
 }
