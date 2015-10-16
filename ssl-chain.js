@@ -27,7 +27,7 @@ if(cmdr.hostname){
         haystack = response.data.chain['1'].key.certificate_pem;
         helpers.attemptToFixChain(haystack, function(repairResponse){
           if (repairResponse !== false) {
-            console.log(repairResponse);
+            helpers.out(repairResponse);
             helpers.success('Successfully fixed intermediate chain for "' + cmdr.hostname + '".');
             helpers.quit(0);
           }
@@ -44,7 +44,7 @@ if(cmdr.hostname){
     haystack = helpers.getFileContent(cmdr.inputFile);
     helpers.attemptToFixChain(haystack, function(repairResponse){
       if (repairResponse !== false) {
-        console.log(repairResponse);
+        helpers.out(repairResponse);
         helpers.success('Successfully fixed intermediate from file "' + cmdr.inputFile + '" chain.');
         helpers.quit(0);
       } else {
@@ -57,7 +57,7 @@ if(cmdr.hostname){
     haystack = helpers.getClipboard();
     helpers.attemptToFixChain(haystack, function(repairResponse){
       if (repairResponse !== false) {
-        console.log(repairResponse);
+        helpers.out(repairResponse);
         helpers.success('Successfully fixed intermediate chain from clipboard.');
         helpers.quit(0);
       } else {
