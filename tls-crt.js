@@ -58,7 +58,7 @@ helpers.resolveDns(inputHostname, function(inputIp){
       helpers.out('Remaining days: ' + realRemainingDays);
     }
 
-    helpers.success('Successfully parsed information:');
+    helpers.success('Successfully parsed information');
 
     // Exit successfully
     helpers.quit(0);

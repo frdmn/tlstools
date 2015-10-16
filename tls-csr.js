@@ -28,15 +28,15 @@ if (cmdr.filename) {
       haystack = helpers.getFileContent(fileName);
       helpers.decodeCsrInformations(haystack, function(decodeResponse){
         if (decodeResponse !== false) {
-          helpers.success('Successfully decoded information from file "' + fileName + '".');
+          helpers.success('Successfully decoded information from file "' + fileName + '"');
           helpers.quit(0);
         } else {
-          helpers.error('Couldn\'t decoded information from file "' + fileName + '".');
+          helpers.error('Couldn\'t decoded information from file "' + fileName + '"');
           helpers.quit(1);
         }
       });
     } else {
-      helpers.error('Couldn\'t access file "' + fileName + '".');
+      helpers.error('Couldn\'t access file "' + fileName + '"');
       helpers.quit(1);
     }
   });
@@ -45,10 +45,10 @@ if (cmdr.filename) {
   haystack = helpers.getClipboard();
   helpers.decodeCsrInformations(haystack, function(decodeResponse){
     if (decodeResponse !== false) {
-      helpers.success('Successfully decoded information from clipboard.');
+      helpers.success('Successfully decoded information from clipboard');
       helpers.quit(0);
     } else {
-      helpers.error('Couldn\'t decode information from clipboard.');
+      helpers.error('Couldn\'t decode information from clipboard');
       helpers.quit(1);
     }
   });

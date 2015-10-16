@@ -48,12 +48,12 @@ if(cmdr.hostname){
         helpers.attemptToFixChain(haystack, function(repairResponse){
           if (repairResponse !== false) {
             helpers.out(repairResponse);
-            helpers.success('Successfully fixed intermediate chain for "' + hostName + '".');
+            helpers.success('Successfully fixed intermediate chain for "' + hostName + '"');
             helpers.quit(0);
           }
         });
       } else {
-        helpers.error('Couldn\'t extract certificate for "' + hostName + ':' + hostPort + '".');
+        helpers.error('Couldn\'t extract certificate for "' + hostName + ':' + hostPort + '"');
         helpers.quit(1);
       }
     });
@@ -67,15 +67,15 @@ if(cmdr.hostname){
       helpers.attemptToFixChain(haystack, function(repairResponse){
         if (repairResponse !== false) {
           helpers.out(repairResponse);
-          helpers.success('Successfully fixed intermediate from file "' + fileName + '" chain.');
+          helpers.success('Successfully fixed intermediate from file "' + fileName + '" chain');
           helpers.quit(0);
         } else {
-          helpers.error('Couldn\'t extract certificate from file "' + fileName + '".');
+          helpers.error('Couldn\'t extract certificate from file "' + fileName + '"');
           helpers.quit(1);
         }
       });
     } else {
-      helpers.error('Couldn\'t access file "' + fileName + '".');
+      helpers.error('Couldn\'t access file "' + fileName + '"');
       helpers.quit(1);
     }
   });
@@ -85,10 +85,10 @@ if(cmdr.hostname){
   helpers.attemptToFixChain(haystack, function(repairResponse){
     if (repairResponse !== false) {
       helpers.out(repairResponse);
-      helpers.success('Successfully fixed intermediate chain from clipboard.');
+      helpers.success('Successfully fixed intermediate chain from clipboard');
       helpers.quit(0);
     } else {
-      helpers.error('Couldn\'t extract certificate from clipboard.');
+      helpers.error('Couldn\'t extract certificate from clipboard');
       helpers.quit(1);
     }
   });
