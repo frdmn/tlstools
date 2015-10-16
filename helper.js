@@ -26,6 +26,13 @@ module.exports = {
   },
 
   /**
+   *
+   */
+   quit: function (code) {
+     process.exit(code);
+   },
+
+  /**
    * Let script die by returning error exit code as well as
    * error message by executing error()
    * @param  {string} message to return
