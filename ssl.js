@@ -17,6 +17,6 @@ var cmdr = require('commander');
 cmdr
   .version('1.1.0')
   .command('chain', 'attempt to fix incomplete certificate chain')
-  .command('csr', 'decode certificate request information')
   .command('crt <hostname> [port]', 'display TLS information for given hostname')
+  .command('csr', 'decode certificate request information')
   .parse(process.argv);
