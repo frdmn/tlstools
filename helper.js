@@ -16,35 +16,44 @@ module.exports = {
   /**
    * Return success indicator and message
    * @param  {string} message to return
+   * @return {bool} true
    */
   success: function (msg) {
     console.log(' ✔ '.bold.green + msg);
+    return true;
   },
 
   /**
    * Return error indicator and message
    * @param  {string} message to return
+   * @return {bool} true
    */
   error: function (msg) {
     console.error(' ✖ '.bold.red + msg);
+    return true;
   },
 
   /**
-   *
+   * Quit runtime and return error code
+   * @param {integer} error code
+   * @return {bool} true
    */
    quit: function (code) {
      process.exit(code);
+     return true;
    },
 
   /**
    * Let script die by returning error exit code as well as
    * error message by executing error()
    * @param  {string} message to return
+   * @return {bool} true
    */
   die: function (msg) {
     // Call function from above to print error message
     module.exports.error(msg);
     process.exit(1);
+    return true;
   },
 
   /**
@@ -123,6 +132,15 @@ module.exports = {
     return fs.writeFileSync(file, content, 'utf8');
   },
 
+  /**
+   * Tries to fix an certificate which can be passed
+   * via the 'haystack' parameter. In case of successful
+   * extraction, it returns the fixed intermediate chain
+   * orwise it'll return 'false'.
+   * @param  {string} haystack
+   * @param  {function} cb
+   * @return {string|BOOL} result
+   */
   attemptToFixChain: function (haystack, cb){
     var libPath = path.join(__dirname, 'lib'),
         resolveChainLib = path.join(libPath, 'cert-chain-resolver.sh');

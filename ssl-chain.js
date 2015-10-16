@@ -64,3 +64,5 @@ if(cmdr.hostname){
     });
   }
 }
+
+typeof console;
