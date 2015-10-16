@@ -14,7 +14,8 @@ var cmdr = require('commander'),
 // Setup sub command options
 cmdr
   .option('-i, --input-file <file>', 'input file that contains certificate')
-  .option('-H, --hostname <host> ', 'hostname to check')
+  .option('-H, --hostname <host>', 'hostname to check')
+  .option('-p, --port <port>', 'optional port, otherwise 443')
   .parse(process.argv);
 
 // Declare variables
@@ -23,7 +24,8 @@ var haystack;
 // If "--hostname" is set
 if(cmdr.hostname){
   helpers.resolveDns(cmdr.hostname, function(ip){
-    helpers.sslDecoderApi(cmdr.hostname, ip, "443", function(response){
+    var hostPort = cmdr.port ? cmdr.port : '443';
+    helpers.sslDecoderApi(cmdr.hostname, ip, hostPort, function(response){
       if (response.data) {
         haystack = response.data.chain['1'].key.certificate_pem;
         helpers.attemptToFixChain(haystack, function(repairResponse){
@@ -34,7 +36,7 @@ if(cmdr.hostname){
           }
         });
       } else {
-        helpers.error('Couldn\'t extract certificate for "' + cmdr.hostname + '".');
+        helpers.error('Couldn\'t extract certificate for "' + cmdr.hostname + ':' + hostPort + '".');
         helpers.quit(1);
       }
     });
