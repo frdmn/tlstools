@@ -191,5 +191,47 @@ module.exports = {
         return cb(false);
       }
     });
+  },
+
+  decodeCsrInformations: function(input, cb){
+    // Try to search and extract certificate sign request
+    var regexMatcher = input.match(/-----BEGIN NEW CERTIFICATE REQUEST-----((.|\n)*?)-----END NEW CERTIFICATE REQUEST-----/g);
+
+    // If there's an certificate sign request ...
+    if (regexMatcher && regexMatcher[0]){
+      // Create and write to tempfile
+      var tmpFileName = sh.exec('mktemp /tmp/ssltools-XXXXXX', { silent: true }).output.trim();
+      module.exports.writeFileContent(tmpFileName, regexMatcher[0]);
+
+      // Store informations
+      var infoCertificate = sh.exec('cat ' + tmpFileName, { silent: true }).output.trim(),
+          infoSubject = sh.exec('openssl req -in ' + tmpFileName + ' -noout -subject', { silent: true }).output.trim(),
+          infoKeySize = sh.exec('openssl req -in ' + tmpFileName + ' -noout -text | grep "Public Key:"', { silent: true }).output.trim(),
+          parsedInfoArray = [];
+
+      // Split by "/" prefix
+      parsedInfoArray = infoSubject.split('/');
+      // ... and get rid of first array element
+      parsedInfoArray.shift();
+
+      // Print out info
+      module.exports.out('Certificate Request:'.bold);
+      module.exports.out(infoCertificate);
+      module.exports.out('Key size: '.bold + infoKeySize.match(/[0-9]+/g)[0] + ' bit');
+      module.exports.out('Subject:'.bold);
+
+      // For each remaining
+      for (k = 0; k < parsedInfoArray.length; k++) {
+        // Split keys and values by "=" separator
+        var keyValue = parsedInfoArray[k].split('=');
+        // Print each key-value pair
+        module.exports.out(' - ' + keyValue[0].bold + ': ' + keyValue[1]);
+      }
+
+      return cb(true);
+    // otherwise return false
+    } else {
+      return cb(false);
+    }
   }
 };
