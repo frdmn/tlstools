@@ -1,23 +1,23 @@
-SSLtools
+TLStools
 ========
 
-Command line tool to analyze, troubleshoot or inspect SSL certificates, requests or keys. Written in NodeJS.
+Command line tool to analyze, troubleshoot or inspect TLS certificates, requests or keys. Written in NodeJS.
 
-* `ssl chain` - Attempt to fix an incomplete certificate chain
-* `ssl crt` - get renewal informations and the CRT (certificate) itself based on a host
-* `ssl csr` - simple decypher and parse informations out a CSR (Certificate Sign Request)
+* `tls chain` - Attempt to fix an incomplete certificate chain
+* `tls crt` - get renewal informations and the CRT (certificate) itself based on a host
+* `tls csr` - simple decypher and parse informations out a CSR (Certificate Sign Request)
 
 # Installation
 
 ```shell
-npm install -g ssltools
+npm install -g tlstools
 ```
 
 # Usage
 
 ```shell
-$ ssl
-Usage: ssl [options] [command]
+$ tls
+Usage: tls [options] [command]
 
 Commands:
 
@@ -34,13 +34,13 @@ Options:
 
 ## Sub commands
 
-### ssl `chain`
+### tls `chain`
 
 Attempt to fix an incomplete certificate chain based on an passed certficate.
 
 ```shell
-$ ssl chain -h
-Usage: ssl chain [options]
+$ tls chain -h
+Usage: tls chain [options]
 
 Options:
 
@@ -55,7 +55,7 @@ Options:
 Assuming you have copied the certificate to check into your system clipboard:
 
 ```shell
-$ ssl chain -c
+$ tls chain -c
  ✔ Successfully parsed information:
 -----BEGIN CERTIFICATE-----
 MIIDnzCCAyWgAwIBAgIQWyXOaQfEJlVm0zkMmalUrTAKBggqhkjOPQQDAzCBhTEL
@@ -104,13 +104,13 @@ jbsJQdQYr7GzEPUQyp2aDrV1aug=
 -----END CERTIFICATE-----
 ```
 
-### ssl `crt`
+### tls `crt`
 
 Decode certificate informations.
 
 ```shell
-$ ssl crt -h
-Usage: ssl crt [options]
+$ tls crt -h
+Usage: tls crt [options]
 
 Options:
 
@@ -124,7 +124,7 @@ Options:
 Show certificate informations from remote host "frd.mn":
 
 ```shell
-$ ssl crt frd.mn
+$ tls crt frd.mn
 ✔ Successfully parsed information:
 -----BEGIN CERTIFICATE-----
 MIIGLzCCBdagAwIBAgIQH3be7EHzH3zHdBvhyXC4wDAKBggqhkjOPQQDAjCBkjEL
@@ -169,13 +169,13 @@ End date: Thu Dec 31 2015 00:59:59 GMT+0100 (CET)
 Remaining days: 96
 ```
 
-### ssl `csr`
+### tls `csr`
 
 Decode and display information from certificate sign requests.
 
 ```shell
-$ ssl csr -h
-Usage: ssl csr [options]
+$ tls csr -h
+Usage: tls csr [options]
 
 Options:
 
@@ -189,7 +189,7 @@ Options:
 In the example below, I copied the CSR into my clipboard and executed the following command:
 
 ```shell
-$ ssl csr -c
+$ tls csr -c
 Certificate Request:
 -----BEGIN CERTIFICATE REQUEST-----
 MIIC+jCCAeICAQAwgbQxCzAJBgNVBAYTAkRFMRAwDgYDVQQIDAdCYXZhcmlhMRMw

@@ -1,8 +1,8 @@
 {
-  "name": "ssltools",
+  "name": "tlstools",
   "version": "1.1.0",
   "description": "CLI tool to analyze, troubleshoot or inspect SSL certificates, requests or keys",
-  "main": "ssl.js",
+  "main": "tls.js",
   "dependencies": {
     "colors": "^1.1.2",
     "copy-paste": "^1.1.3",
@@ -17,23 +17,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/frdmn/ssltools.git"
+    "url": "git+https://github.com/frdmn/tlstools.git"
   },
   "keywords": [
-    "ssl",
+    "tls",
     "tls",
     "tools"
   ],
   "author": "Jonas Friedmann <j@frd.mn>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/frdmn/ssltools/issues"
+    "url": "https://github.com/frdmn/tlstools/issues"
   },
-  "homepage": "https://github.com/frdmn/ssltools#readme",
+  "homepage": "https://github.com/frdmn/tlstools#readme",
   "bin": {
-    "ssl": "ssl.js",
-    "ssl-chain": "ssl-chain.js",
-    "ssl-crt": "ssl-crt.js",
-    "ssl-csr": "ssl-csr.js"
+    "tls": "tls.js",
+    "tls-chain": "tls-chain.js",
+    "tls-crt": "tls-crt.js",
+    "tls-csr": "tls-csr.js"
   }
 }
