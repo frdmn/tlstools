@@ -132,7 +132,7 @@ module.exports = {
 
     // Abort if not a single one found
     if (!regexMatcher || !regexMatcher[0]){
-      helper.die('Couldn\'t extract certificate');
+      return cb(false);
     }
 
     var foundCrt = regexMatcher[0];
