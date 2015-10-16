@@ -59,14 +59,21 @@ if(cmdr.hostname){
 // If "--input-file" is set
 } else if (cmdr.filename) {
   var fileName = cmdr.filename;
-  haystack = helpers.getFileContent(fileName);
-  helpers.attemptToFixChain(haystack, function(repairResponse){
-    if (repairResponse !== false) {
-      helpers.out(repairResponse);
-      helpers.success('Successfully fixed intermediate from file "' + fileName + '" chain.');
-      helpers.quit(0);
+  helpers.checkIfFileExists(fileName, function(exists){
+    if (exists){
+      haystack = helpers.getFileContent(fileName);
+      helpers.attemptToFixChain(haystack, function(repairResponse){
+        if (repairResponse !== false) {
+          helpers.out(repairResponse);
+          helpers.success('Successfully fixed intermediate from file "' + fileName + '" chain.');
+          helpers.quit(0);
+        } else {
+          helpers.error('Couldn\'t extract certificate from file "' + fileName + '".');
+          helpers.quit(1);
+        }
+      });
     } else {
-      helpers.error('Couldn\'t extract certificate from file "' + fileName + '".');
+      helpers.error('Couldn\'t access file "' + fileName + '".');
       helpers.quit(1);
     }
   });

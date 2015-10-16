@@ -175,5 +175,21 @@ module.exports = {
       sh.exec('rm ' + tmpFileName + '*', { silent: true });
       return cb(response);
     });
+  },
+
+  /**
+   * Check if file exists on file system
+   * @param  {String}   filename
+   * @param  {Function} callback
+   * @return {Bool}     result
+   */
+  checkIfFileExists: function(filename, cb){
+    fs.stat(filename, function(err, stat) {
+      if(err === null) {
+        return cb(true);
+      } else {
+        return cb(false);
+      }
+    });
   }
 };
