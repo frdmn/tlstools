@@ -34,6 +34,7 @@ if(cmdr.hostname){
         });
       } else {
         helpers.error('Couldn\'t extract certificate for "' + cmdr.hostname + '".');
+        helpers.quit(1);
       }
     });
   });
@@ -48,9 +49,10 @@ if(cmdr.hostname){
         helpers.quit(0);
       } else {
         helpers.error('Couldn\'t extract certificate from file "' + cmdr.inputFile + '".');
+        helpers.quit(1);
       }
     });
-  // If "--input-file" is set
+  // otherwise check clipboard...
   } else {
     haystack = helpers.getClipboard();
     helpers.attemptToFixChain(haystack, function(repairResponse){
@@ -60,6 +62,7 @@ if(cmdr.hostname){
         helpers.quit(0);
       } else {
         helpers.error('Couldn\'t extract certificate from clipboard.');
+        helpers.quit(1);
       }
     });
   }
