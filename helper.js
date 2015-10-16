@@ -165,7 +165,7 @@ module.exports = {
     var foundCrt = regexMatcher[0];
 
     // Create temporary file and write CRT into it
-    var tmpFileName = sh.exec('mktemp /tmp/ssltools-chain-XXXXXX', { silent: true }).output.trim();
+    var tmpFileName = sh.exec('mktemp /tmp/ssltools-XXXXXX', { silent: true }).output.trim();
     module.exports.writeFileContent(tmpFileName, foundCrt);
 
     // Attempt to fix certificate chain using "cert-chain-resolver.sh"
