@@ -42,7 +42,9 @@ if(cmdr.hostname){
     helpers.sslDecoderApi(hostName, ip, hostPort, function(response){
       // If 'data' element, select and store certificate
       if (response.data) {
+        /* jshint -W106 */
         haystack = response.data.chain['1'].key.certificate_pem;
+        /* jshint +W106 */
         helpers.attemptToFixChain(haystack, function(repairResponse){
           if (repairResponse !== false) {
             helpers.out(repairResponse);

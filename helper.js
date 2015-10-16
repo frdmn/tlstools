@@ -107,7 +107,7 @@ module.exports = {
         return cb(false);
       }
 
-      if (response.statusCode == 200) {
+      if (response.statusCode === 200) {
         return cb(JSON.parse(body));
       } else {
         return cb(error);
@@ -221,7 +221,7 @@ module.exports = {
       module.exports.out('Subject:'.bold);
 
       // For each remaining
-      for (k = 0; k < parsedInfoArray.length; k++) {
+      for (var k = 0; k < parsedInfoArray.length; k++) {
         // Split keys and values by "=" separator
         var keyValue = parsedInfoArray[k].split('=');
         // Print each key-value pair

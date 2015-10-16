@@ -35,9 +35,11 @@ helpers.resolveDns(inputHostname, function(inputIp){
     }
 
     // Store particular info
+    /* jshint -W106 */
     var jsonCrt = response.data.chain['1'].key.certificate_pem,
         jsonStartDate = response.data.chain['1'].cert_data.validFrom_time_t,
         jsonEndDate = response.data.chain['1'].cert_data.validTo_time_t;
+    /* jshint +W106 */
 
     var realStartDate = new Date(jsonStartDate * 1000),
         realEndDate = new Date(jsonEndDate * 1000),
@@ -55,7 +57,7 @@ helpers.resolveDns(inputHostname, function(inputIp){
       helpers.out('End date: ' + realEndDate);
       helpers.out('Remaining days: ' + realRemainingDays);
     }
-    
+
     helpers.success('Successfully parsed information:');
 
     // Exit successfully
