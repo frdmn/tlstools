@@ -53,6 +53,6 @@ if (cmdr.filename) {
     }
   });
 } else {
-  helpers.error('No option passed.');
+  helpers.error('No option passed');
   cmdr.help();
 }
