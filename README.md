@@ -224,3 +224,8 @@ Subject:
  - emailAddress: postmaster@yeahwh.at
  ✔ Successfully decoded information from clipboard.
 ```
+
+# Credits
+
+* @[zakjan](https://github.com/zakjan/) for the [`cert-chain-resolver.sh`](vendor/cert-chain-resolver.sh) shell script:  
+https://github.com/zakjan/cert-chain-resolver/
