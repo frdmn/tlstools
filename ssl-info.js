@@ -7,7 +7,7 @@
  */
 
 var cmdr = require('commander'),
-    helper = require('./helper');
+    helpers = require('./helper');
 
 /* Logic */
 
@@ -23,18 +23,18 @@ var inputPort = cmdr.args[1] ? cmdr.args[1] : '443'; // Fallback to default SSL 
 
 // If no first argument, no hostname given => die
 if (!inputHostname) {
-  helper.die('No hostname given');
+  helpers.die('No hostname given');
 }
 
 // Resolve DNS of input hostname
-helper.resolveDns(inputHostname, function(inputIp){
-  helper.sslDecoderApi(inputHostname, inputIp, inputPort, function(response){
+helpers.resolveDns(inputHostname, function(inputIp){
+  helpers.sslDecoderApi(inputHostname, inputIp, inputPort, function(response){
     // Check if JSON contains expected certificate data
     if (typeof response.data === 'undefined') {
-      helper.die('Couldn\'t get certificate of ' + inputHostname + ':' + inputPort);
+      helpers.die('Couldn\'t get certificate of ' + inputHostname + ':' + inputPort);
     }
 
-    helper.success('Successfully parsed information:');
+    helpers.success('Successfully parsed information:');
 
     // Store particular info
     var jsonCrt = response.data.chain['1'].key.certificate_pem,
@@ -47,18 +47,18 @@ helper.resolveDns(inputHostname, function(inputIp){
 
     // Only show the CRT if "--only-info" is _NOT_ passed
     if (!cmdr.onlyInfo) {
-      console.log(jsonCrt);
+      helpers.out(jsonCrt);
     }
 
     // Only show certificate information if "--only-cert" is _NOT_ passed
     if (!cmdr.onlyCert) {
-      console.log('Host/port: ' + inputHostname + ':' + inputPort);
-      console.log('Start date: ' + realStartDate);
-      console.log('End date: ' + realEndDate);
-      console.log('Remaining days: ' + realRemainingDays);
+      helpers.out('Host/port: ' + inputHostname + ':' + inputPort);
+      helpers.out('Start date: ' + realStartDate);
+      helpers.out('End date: ' + realEndDate);
+      helpers.out('Remaining days: ' + realRemainingDays);
     }
 
     // Exit successfully
-    helper.quit(0);
+    helpers.quit(0);
   });
 });
