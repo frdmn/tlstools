@@ -1,49 +1,61 @@
 SSLtools
 ========
 
-A bunch of Bash scripts to help analyze, troubleshoot or inspect SSL certificates, requests or keys:
+Command line tool to analyze, troubleshoot or inspect SSL certificates, requests or keys. Written in NodeJS.
 
 * `ssl chain` - Attempt to fix an incomplete certificate chain
+* `ssl crt` - get renewal informations and the CRT (certificate) itself based on a host
 * `ssl csr` - simple decypher and parse informations out a CSR (Certificate Sign Request)
-* `ssl host` - get renewal informations and the CRT (certificate) itself based on a host
 
 # Installation
 
 ```shell
-cd /usr/local/src
-git clone git://github.com/frdmn/ssltools.git
-cd ssltools
-ln -s /usr/local/src/ssltools/ssl /usr/local/bin/ssl
+npm install -g ssltools
 ```
 
 # Usage
 
 ```shell
-Usage: $ ssl [OPTION] [COMMAND]...
+$ ssl
+Usage: ssl [options] [command]
 
-Description of this script.
+Commands:
 
- Options:
-  -q, --quiet       Quiet (no output)
-  -v, --verbose     Output more
-  -h, --help        Display this help and exit
-      --version     Output version information and exit
+  chain                  attempt to fix incomplete certificate chain
+  csr                    decode certificate request information
+  crt <hostname> [port]  display TLS information for given hostname
+  help [cmd]             display help for [cmd]
 
- Available commands:
-  chain             Try to fix an incomplete intermediate chain
-  csr               Decode certificate request in cliboard
-  host [host]       Try to parse relevant certificate informations
+Options:
 
-  Run "ssl [command] -h" for further information
+  -h, --help     output usage information
+  -V, --version  output the version number
 ```
 
-1. Copy the CRT where you need the chain from into your clipboard. _(optional)_
-1. Run the script: `ssl chain`
-1. Output should look like this:
+## Sub commands
+
+### ssl `chain`
+
+Attempt to fix an incomplete certificate chain based on an passed certficate.
 
 ```shell
-$ ssl chain  
- ✔  Successfuly fixed intermediate chain:
+$ ssl chain -h
+Usage: ssl chain [options]
+
+Options:
+
+  -h, --help                    output usage information
+  -f, --filename <file>         search certificate in file
+  -H, --hostname <host[:port]>  use certificate from remote hostname
+  -c, --clipboard               search certificate in clipboard
+```
+
+---
+
+Assuming you have copied the certificate to check into your system clipboard:
+
+```shell
+$ ssl chain -c
 -----BEGIN CERTIFICATE-----
 MIIDnzCCAyWgAwIBAgIQWyXOaQfEJlVm0zkMmalUrTAKBggqhkjOPQQDAzCBhTEL
 MAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UE
@@ -88,117 +100,124 @@ lztSjxLCdJcBns/hbWjYk7mcJPuWJ0gBnOqUP3CYQbNzUTcp6PYBerknuCRR2RFo
 1KaFpzanpZa6gPim/a5thCCuNXZzQg+HCezF3OeTAyIal+6ailFhp5cmHunudVEI
 kAWvL54TnJM/ev/m6+loeYyv4Lb67psSE/5FjNJ80zXrIRKT/mZ1JioVhCb3ZsnL
 jbsJQdQYr7GzEPUQyp2aDrV1aug=
------END CERTIFICATE----
-```
-
-### ssl `chain`
-
-```shell
-Usage: $ ssl host [HOST] <PORT>
-
- Attempt to fix an incomplete certificate chain based on an input CRT.
-
-```
-
-1. Run the bash script with `ssl chain <hostname>`
-1. Output should look like:
-
-```shell
-$ ssl host git.frd.mn
------BEGIN CERTIFICATE-----
-MIIDPDCCAiQCCQCMdIDa4khx8DANBgkqhkiG9w0BAQUFADBgMQswCQYDVQQGEwJE
-RTEPMA0GA1UECBMGQmF5ZXJuMRMwEQYDVQQHEwpFaWJlbHN0YWR0MRIwEAYDVQQK
-Ewl5ZWFod2guYXQxFzAVBgkqhkiG9w0BCQEWCGpAZnJkLm1uMB4XDTEzMDYyNzEx
-MTk1N1oXDTE0MDYyNzExMTk1N1owYDELMAkGA1UEBhMCREUxDzANBgNVBAgTBkJh
-eWVybjETMBEGA1UEBxMKRWliZWxzdGFkdDESMBAGA1UEChMJeWVhaHdoLmF0MRcw
-FQYJKoZIhvcNAQkBFghqQGZyZC5tbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
-AQoCggEBANOguiBBMcPaoAxOIb9gBVGMA5/+GC5QBkfkh135j8STcl1NOT0OFLIJ
-pQYFohBWMWa6D4+7BkDSWbBCA05W5flm73yAGst8L8zy6eO9aVYKdt/9gMvwPFYz
-vC/FuqyY0DBQJRdz9m/SOz3jluDLks0FdIJBtldXmLz27de3DNL35/1JtN12/7+z
-4KL/VVj3RD3HQ5klanqzROaca7wN10qjsehqVW9/PiER2gmLT5Xa9GU1hFSDlVKu
-oocRUNyO8fqFA1Yed7RbYPrXmroZS7vltEeN7t9U4WQsA8t+xAbxW6N7CSwHPQUP
-wh3luBZhXUxedu9beHv5d58YK0gYm7sCAwEAATANBgkqhkiG9w0BAQUFAAOCAQEA
-vHX0n9BmZLZ+g08MUAyuM4YnpqHQRyhNkfJJDoz5SJrt7Lg1FgLv4ZjQrSM81Ho8
-jBzqaOpUTp/f46w/2/mepJZvewd+yv9oJYfFQBFPow9esVjfhB+RH3BnbTWQLHyi
-lOYbjcbEidIonPLR9raYLKBKisVxx6oXhuJsOLPhUkxVslF4DqT3EZQShHYN376N
-MWFrC/hTHe5NEaITZ6lZfz8OKx1P74ucNSuXOY6YMuT/mukartS2Pu3QUscFghHG
-NVG9atsZL3EOAhK4bmAXMyIyF88dsR/VL8h2CRh1qY8vkZP1wfZjOgWYOZTfwc3+
-k7ZNe3qfHSvjjXaHlD+XFg==
 -----END CERTIFICATE-----
 
-Host / Port: git.frd.mn:443
-Start date: Jun 27 11:19:57 2013 GMT
-End date: Jun 27 11:19:57 2014 GMT
-Days left: 276
+ ✔ Successfully fixed intermediate chain from clipboard.
+```
+
+### ssl `crt`
+
+Decode certificate informations.
+
+```shell
+$ ssl crt -h
+Usage: ssl crt [options]
+
+Options:
+
+  -h, --help       output usage information
+  -c, --only-cert  display only the certificate
+  -i, --only-info  display only the CRT information
+```
+
+---
+
+Show certificate informations from remote host "frd.mn":
+
+```shell
+$ ssl crt frd.mn
+✔ Successfully parsed information:
+-----BEGIN CERTIFICATE-----
+MIIGLzCCBdagAwIBAgIQH3be7EHzH3zHdBvhyXC4wDAKBggqhkjOPQQDAjCBkjEL
+MAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UE
+BxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQxODA2BgNVBAMT
+L0NPTU9ETyBFQ0MgRG9tYWluIFZhbGlkYXRpb24gU2VjdXJlIFNlcnZlciBDQSAy
+MB4XDTE1MDkyNjAwMDAwMFoXDTE1MTIzMDIzNTk1OVowazEhMB8GA1UECxMYRG9t
+YWluIENvbnRyb2wgVmFsaWRhdGVkMSEwHwYDVQQLExhQb3NpdGl2ZVNTTCBNdWx0
+aS1Eb21haW4xIzAhBgNVBAMTGnNuaTMzMjgwLmNsb3VkZmxhcmVzc2wuY29tMFkw
+EwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE/VVyjyzoogarRb9sqmpqwwAf+Kh69I9E
+5NeT/1s9nVjvEzYTnrEN3xqNrzbA/y61AbJ6Yy714OCq1ViAmBuCPaOCBDIwggQu
+MB8GA1UdIwQYMBaAFEAJYWfwvINxT94SCCxv1NQrdj2WMB0GA1UdDgQWBBT1uV7H
+fwV8Ca9MxjAiSHOEyE9EVDAOBgNVHQ8BAf8EBAMCB4AwDAYDVR0TAQH/BAIwADAd
+BgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwTwYDVR0gBEgwRjA6BgsrBgEE
+AbIxAQICBzArMCkGCCsGAQUFBwIBFh1odHRwczovL3NlY3VyZS5jb21vZG8uY29t
+L0NQUzAIBgZngQwBAgEwVgYDVR0fBE8wTTBLoEmgR4ZFaHR0cDovL2NybC5jb21v
+ZG9jYTQuY29tL0NPTU9ET0VDQ0RvbWFpblZhbGlkYXRpb25TZWN1cmVTZXJ2ZXJD
+QTIuY3JsMIGIBggrBgEFBQcBAQR8MHowUQYIKwYBBQUHMAKGRWh0dHA6Ly9jcnQu
+Y29tb2RvY2E0LmNvbS9DT01PRE9FQ0NEb21haW5WYWxpZGF0aW9uU2VjdXJlU2Vy
+dmVyQ0EyLmNydDAlBggrBgEFBQcwAYYZaHR0cDovL29jc3AuY29tb2RvY2E0LmNv
+bTCCAnkGA1UdEQSCAnAwggJsghpzbmkzMzI4MC5jbG91ZGZsYXJlc3NsLmNvbYIT
+Ki4xMDAxY29ja3RhaWxzLmNvbYIRKi4xMDAxbW90ZXVycy5jb22CEiouYWxpZml0
+emdlcmFsZC5tZYINKi5hbGlrZml0ei5tZYINKi5ib3J1dC5wYXJ0eYINKi5lbGth
+c3NhLmNvbYIIKi5mcmQubW6CGyouZy1hbmQtYy1lbGVjdHJvbmljcy5jby51a4IJ
+Ki5naGFjLmRlgg4qLmtub3R0Ym95cy5ldYIaKi5tb250Z29tZXJ5dm9jYWxjb2Fj
+aC5jb22CDioubW96YWlrLmNvLmlkggsqLm1vemFpay5pZIIKKi5uZXdlci5jY4IW
+Ki5wZXJzb25hbGl6YXJibG9nLmNvbYIUKi5zd2FnZG9nd2Fsa2luZy5jb22CGSou
+dGhlZ29sZGVuYW5kY29tcGFueS5jb22CETEwMDFjb2NrdGFpbHMuY29tgg8xMDAx
+bW90ZXVycy5jb22CEGFsaWZpdHpnZXJhbGQubWWCC2FsaWtmaXR6Lm1lggtib3J1
+dC5wYXJ0eYILZWxrYXNzYS5jb22CBmZyZC5tboIZZy1hbmQtYy1lbGVjdHJvbmlj
+cy5jby51a4IHZ2hhYy5kZYIMa25vdHRib3lzLmV1ghhtb250Z29tZXJ5dm9jYWxj
+b2FjaC5jb22CDG1vemFpay5jby5pZIIJbW96YWlrLmlkgghuZXdlci5jY4IUcGVy
+c29uYWxpemFyYmxvZy5jb22CEnN3YWdkb2d3YWxraW5nLmNvbYIXdGhlZ29sZGVu
+YW5kY29tcGFueS5jb20wCgYIKoZIzj0EAwIDRwAwRAIgZzfbzLiht8LIcEwvCKIj
+xRC5hF3mcVUzAYMTsAp+PWoCIBCaOZvgDR0t7tCijM6o5N3vNHDs0vQbtQkEaQSx
+/j9A
+-----END CERTIFICATE-----
+
+Host/port: frd.mn:443
+Start date: Sat Sep 26 2015 02:00:00 GMT+0200 (CEST)
+End date: Thu Dec 31 2015 00:59:59 GMT+0100 (CET)
+Remaining days: 96
 ```
 
 ### ssl `csr`
 
-```shell
-Usage: $ ssl csr
-
- Parse a TLS certificate sign request from your clipboard and show
- encoded informations as plain text.
- ```
-
-1. Copy the CSR that you want to decrypt into your clipboard. _(optional)_
-1. Run the bash script with `ssl csr`
-1. If you don't have a CSR in your clipboard, it'll will ask you for the actual CSR
-1. Output should look like this:
+Decode and display information from certificate sign requests.
 
 ```shell
-$ ssl csr  
-commonName: www.frd.mn  
-organizationalUnitName: Blog  
-organizationName: Jonas Friedmann  
-localityName: Wuerzburg  
-stateOrProvinceName: Bayern  
-countryName: DE  
-emailAddress: j@frd.mn  
+$ ssl csr -h
+Usage: ssl csr [options]
+
+Options:
+
+  -h, --help             output usage information
+  -f, --filename <file>  search CRT or CSR in file
+  -c, --clipboard        search CSR in clipboard
 ```
 
-### ssl `host`
+---
+
+In the example below, I copied the CSR into my clipboard and executed the following command:
 
 ```shell
-Usage: $ ssl host [HOST] <PORT>
-
- Display certificate of given [HOST] and show remaining expiration
- date.
-
- Options:
-  -c, --only-cert          Only display the certificate
-  -i, --only-information   Only display the CRT information
-```
-
-1. Run the bash script with `ssl host <hostname>`
-1. Output should look like:
-
-```shell
-$ ssl host git.frd.mn
- ✔  Successfully parsed informations
------BEGIN CERTIFICATE-----
-MIIDPDCCAiQCCQCMdIDa4khx8DANBgkqhkiG9w0BAQUFADBgMQswCQYDVQQGEwJE
-RTEPMA0GA1UECBMGQmF5ZXJuMRMwEQYDVQQHEwpFaWJlbHN0YWR0MRIwEAYDVQQK
-Ewl5ZWFod2guYXQxFzAVBgkqhkiG9w0BCQEWCGpAZnJkLm1uMB4XDTEzMDYyNzEx
-MTk1N1oXDTE0MDYyNzExMTk1N1owYDELMAkGA1UEBhMCREUxDzANBgNVBAgTBkJh
-eWVybjETMBEGA1UEBxMKRWliZWxzdGFkdDESMBAGA1UEChMJeWVhaHdoLmF0MRcw
-FQYJKoZIhvcNAQkBFghqQGZyZC5tbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
-AQoCggEBANOguiBBMcPaoAxOIb9gBVGMA5/+GC5QBkfkh135j8STcl1NOT0OFLIJ
-pQYFohBWMWa6D4+7BkDSWbBCA05W5flm73yAGst8L8zy6eO9aVYKdt/9gMvwPFYz
-vC/FuqyY0DBQJRdz9m/SOz3jluDLks0FdIJBtldXmLz27de3DNL35/1JtN12/7+z
-4KL/VVj3RD3HQ5klanqzROaca7wN10qjsehqVW9/PiER2gmLT5Xa9GU1hFSDlVKu
-oocRUNyO8fqFA1Yed7RbYPrXmroZS7vltEeN7t9U4WQsA8t+xAbxW6N7CSwHPQUP
-wh3luBZhXUxedu9beHv5d58YK0gYm7sCAwEAATANBgkqhkiG9w0BAQUFAAOCAQEA
-vHX0n9BmZLZ+g08MUAyuM4YnpqHQRyhNkfJJDoz5SJrt7Lg1FgLv4ZjQrSM81Ho8
-jBzqaOpUTp/f46w/2/mepJZvewd+yv9oJYfFQBFPow9esVjfhB+RH3BnbTWQLHyi
-lOYbjcbEidIonPLR9raYLKBKisVxx6oXhuJsOLPhUkxVslF4DqT3EZQShHYN376N
-MWFrC/hTHe5NEaITZ6lZfz8OKx1P74ucNSuXOY6YMuT/mukartS2Pu3QUscFghHG
-NVG9atsZL3EOAhK4bmAXMyIyF88dsR/VL8h2CRh1qY8vkZP1wfZjOgWYOZTfwc3+
-k7ZNe3qfHSvjjXaHlD+XFg==
------END CERTIFICATE-----
-
-Host / Port: git.frd.mn:443
-Start date: Jun 27 11:19:57 2013 GMT
-End date: Jun 27 11:19:57 2014 GMT
-Days left: 276
+$ ssl csr -c
+Certificate Request:
+-----BEGIN CERTIFICATE REQUEST-----
+MIIC+jCCAeICAQAwgbQxCzAJBgNVBAYTAkRFMRAwDgYDVQQIDAdCYXZhcmlhMRMw
+EQYDVQQHDApFaWJlbHN0YWR0MSUwIwYDVQQKDBxZRUFIV0hBVD8hIE1pbmVjcmFm
+dCBzZXJ2ZXJzMRQwEgYDVQQLDAtNYWlsIHN5c3RlbTEcMBoGA1UEAwwTY2hld2Jh
+Y2NhLnllYWh3aC5hdDEjMCEGCSqGSIb3DQEJARYUcG9zdG1hc3RlckB5ZWFod2gu
+YXQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDAi9mSsi01EDc3QMCL
+lreBVzDSsICIc8w4mttgSg+cW/Hl98iDZ/awyv0hEeXLg/rybR42LHCRXyJbiuV8
+edOGbYN5ODD3di5tOmzjgJm34gmSxuzzZSe6431C9nR0BJaPwGbBoFqBO5MiWD1i
+Z7Cv3a+xJQO0gN+3PIgSMOGAD608bqJN58ewtqqYY0xM3vQCEcf40TJJc8fv1+a5
+1BM07s26L0Az5xZeIcWOqBgvBQhY0dI3QEKW5BbQDVA/OFilpbJFqCseosjz0/YG
+tS46CHGjNuViAcxeJ/IWKRWB3TCd2KhIqaEZLCVTWPqCaQ7CioITgrQW+c/qVCfv
+to6xAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAQEAu8gxx8RrQPeWvKJiY3fmTNHg
+lEDQU2vTPU+56UZEuCVztj1LdmjzFpH6biFa+C2XxkTxfeXc9OakklWlIgfP7b2Y
+RTObWPcpyDSE+yB79Lhybb4Wr3vASJJWSgwqymp5BjEj0iHeVFzvippvvyPieafr
+a31cPiG5UbOWOXpeZ73K1qBqmpRglzYouqWPA0D9e9wks71INhPL8wODRha2RZ9M
+voaVZHsm6NB+WAZzK+wznc1wLs/mVigqfjakU//VXi8opb7hTkH1/8h8Pn5uCFM7
+3UcTESfcIv3XuKeLXKQEJZtR3PQlWDb+pI7x1iUm7k0Q1KXsYysdUzq/fGTSdw==
+-----END CERTIFICATE REQUEST-----
+Key size: 2048 bit
+Subject:
+ - C: DE
+ - ST: Bavaria
+ - L: Eibelstadt
+ - O: YEAHWHAT?! Minecraft servers
+ - OU: Mail system
+ - CN: chewbacca.yeahwh.at
+ - emailAddress: postmaster@yeahwh.at
+ ✔ Successfully decoded information from clipboard.
 ```
