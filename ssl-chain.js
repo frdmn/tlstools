@@ -13,13 +13,14 @@ var cmdr = require('commander'),
 
 // Setup sub command options
 cmdr
-  .option('-i, --input-file [file]', 'input file that contains certificate')
-  .option('-h, --hostname [host]', 'hostname to check')
+  .option('-i, --input-file <file>', 'input file that contains certificate')
+  .option('-H, --hostname <host> ', 'hostname to check')
   .parse(process.argv);
 
 // Declare variables
 var haystack;
 
+// If "--hostname" is set
 if(cmdr.hostname){
   helpers.resolveDns(cmdr.hostname, function(ip){
     helpers.sslDecoderApi(cmdr.hostname, ip, "443", function(response){
