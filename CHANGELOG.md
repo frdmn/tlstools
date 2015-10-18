@@ -1,6 +1,13 @@
+<a name="1.2.0"></a>
+# 1.2.0 (2015-10-18)
+
+
+* Add Node based getCertificateInfo() function ([5dd7903](https://github.com/frdmn/tlstools/commit/5dd7903)) and ([58a57da](https://github.com/frdmn/tlstools/commit/58a57da))
+* Add openssl wrapper lib ([5c2f450](https://github.com/frdmn/tlstools/commit/5c2f450))
+* Rename attemptToFixChain() to resolveCertificateChain() ([5b9a884](https://github.com/frdmn/tlstools/commit/5b9a884))
+
 <a name="1.1.1"></a>
 ## 1.1.1 (2015-10-16)
-
 
 * Add CHANGELOG.md ([70f5af7](https://github.com/frdmn/tlstools/commit/70f5af7))
 * Add credits ([a9bed06](https://github.com/frdmn/tlstools/commit/a9bed06))
