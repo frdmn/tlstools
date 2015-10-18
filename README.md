@@ -21,19 +21,19 @@ npm install -g tlstools
 
 ```shell
 $ tls
-Usage: tls [options] [command]
+  Usage: tls [options] [command]
 
-Commands:
+  Commands:
 
-  chain                  attempt to fix incomplete certificate chain
-  crt <hostname> [port]  display TLS information for given hostname
-  csr                    decode certificate request information
-  help [cmd]             display help for [cmd]
+    chain       attempt to fix incomplete certificate chain
+    crt         display TLS information for given hostname
+    csr         decode certificate request information
+    help [cmd]  display help for [cmd]
 
-Options:
+  Options:
 
-  -h, --help     output usage information
-  -V, --version  output the version number
+    -h, --help     output usage information
+    -V, --version  output the version number
 ```
 
 ## Sub commands
@@ -44,14 +44,14 @@ Attempt to fix an incomplete certificate chain based on an passed certficate.
 
 ```shell
 $ tls chain -h
-Usage: tls chain [options]
+  Usage: tls chain [options]
 
-Options:
+  Options:
 
-  -h, --help                    output usage information
-  -f, --filename <file>         search certificate in file
-  -H, --hostname <host[:port]>  use certificate from remote hostname
-  -c, --clipboard               search certificate in clipboard
+    -h, --help                    output usage information
+    -f, --filename <file>         search certificate in file
+    -H, --hostname <host[:port]>  use certificate from remote hostname
+    -c, --clipboard               search certificate in clipboard
 ```
 
 ---
@@ -115,13 +115,14 @@ Decode certificate informations.
 
 ```shell
 $ tls crt -h
-Usage: tls crt [options]
+  Usage: tls crt [options]
 
-Options:
+  Options:
 
-  -h, --help       output usage information
-  -c, --only-cert  display only the certificate
-  -i, --only-info  display only the CRT information
+    -h, --help                    output usage information
+    -f, --filename <file>         search certificate in file
+    -H, --hostname <host[:port]>  use certificate from remote hostname
+    -c, --clipboard               search certificate in clipboard
 ```
 
 ---
@@ -180,13 +181,13 @@ Decode and display information from certificate sign requests.
 
 ```shell
 $ tls csr -h
-Usage: tls csr [options]
+  Usage: tls csr [options]
 
-Options:
+  Options:
 
-  -h, --help             output usage information
-  -f, --filename <file>  search CRT or CSR in file
-  -c, --clipboard        search CSR in clipboard
+    -h, --help             output usage information
+    -f, --filename <file>  search CRT or CSR in file
+    -c, --clipboard        search CSR in clipboard
 ```
 
 ---
