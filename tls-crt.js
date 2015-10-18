@@ -13,10 +13,7 @@ var cmdr = require('commander'),
 /* Functions */
 
 /**
-* Tries to fix an certificate which can be passed
-* via the 'haystack' parameter. In case of successful
-* extraction, it returns the fixed intermediate chain
-* orwise it'll return 'false'.
+* Display decoded certificate information to stdout
 * @param  {String}      certificate
 * @param  {Function}    callback
 * @return {String|Bool} result
@@ -38,7 +35,7 @@ var displayCrtInformation = function (cert, cb){
 
       // For each subject element
       for(var subjectElement in data.subject){
-        helpers.out(' - ' + subjectElement + ': ' + data.issuer[issuerElement]);
+        helpers.out(' - ' + subjectElement + ': ' + data.subject[subjectElement]);
       }
 
       helpers.out('Valid from:'.bold + ' ' + data.validFrom);
@@ -46,6 +43,8 @@ var displayCrtInformation = function (cert, cb){
       helpers.out('Remaining days:'.bold + ' ' + data.remainingDays);
 
       return cb(true);
+    } else {
+      return cb(false);
     }
   });
 }
