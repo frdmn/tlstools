@@ -7,60 +7,136 @@
  */
 
 var cmdr = require('commander'),
-    helpers = require('./lib/helper');
+    helpers = require('./lib/helper'),
+    openssl = require('./lib/openssl');
+
+/* Functions */
+
+/**
+* Display decoded certificate information to stdout
+* @param  {String}      certificate
+* @param  {Function}    callback
+* @return {String|Bool} result
+*/
+var displayCrtInformation = function (cert, cb){
+  openssl.getCertificateInfo(cert, function(err, data){
+    if (err === undefined) {
+      // Print out info
+      helpers.out('Certificate Request:'.bold);
+      helpers.out(data.certificate);
+      helpers.out('Issuer:'.bold);
+
+      // For each issuer element
+      for(var issuerElement in data.issuer){
+        helpers.out(' - ' + issuerElement + ': ' + data.issuer[issuerElement]);
+      }
+
+      helpers.out('Subject:'.bold);
+
+      // For each subject element
+      for(var subjectElement in data.subject){
+        helpers.out(' - ' + subjectElement + ': ' + data.subject[subjectElement]);
+      }
+
+      helpers.out('Valid from:'.bold + ' ' + data.validFrom);
+      helpers.out('Valid to:'.bold + ' ' + data.validTo);
+      helpers.out('Remaining days:'.bold + ' ' + data.remainingDays);
+
+      return cb(true);
+    } else {
+      // console.log(err.message);
+      return cb(false);
+    }
+  });
+}
 
 /* Logic */
 
 // Setup sub command options
 cmdr
-  .option('-c, --only-cert', 'display only the certificate')
-  .option('-i, --only-info', 'display only the CRT information')
+  .option('-f, --filename <file>', 'search certificate in file')
+  .option('-H, --hostname <host[:port]>', 'use certificate from remote hostname')
+  .option('-c, --clipboard', 'search certificate in clipboard')
   .parse(process.argv);
 
-// Remaining args are actual hostnames
-var inputHostname = cmdr.args[0];
-var inputPort = cmdr.args[1] ? cmdr.args[1] : '443'; // Fallback to default SSL port
+// Declare variables
+var haystack;
 
-// If no first argument, no hostname given => die
-if (!inputHostname) {
-  helpers.die('No hostname given');
-}
+// If "--hostname" is set
+if(cmdr.hostname){
+  var socketName = cmdr.hostname,
+      socketArray = socketName.split(':');
 
-// Resolve DNS of input hostname
-helpers.resolveDns(inputHostname, function(inputIp){
-  helpers.sslDecoderApi(inputHostname, inputIp, inputPort, function(response){
-    // Check if JSON contains expected certificate data
-    if (typeof response.data === 'undefined') {
-      helpers.die('Couldn\'t get certificate of ' + inputHostname + ':' + inputPort);
-    }
+  // Extract hostname from socketArray
+  var hostName = socketArray[0];
 
-    // Store particular info
-    /* jshint -W106 */
-    var jsonCrt = response.data.chain['1'].key.certificate_pem,
-        jsonStartDate = response.data.chain['1'].cert_data.validFrom_time_t,
-        jsonEndDate = response.data.chain['1'].cert_data.validTo_time_t;
-    /* jshint +W106 */
+  // If socketArray > 1 then it contains a port
+  if (socketArray.length > 1){
+    var hostPort = socketArray[1];
+  } else {
+    var hostPort = '443';
+  }
 
-    var realStartDate = new Date(jsonStartDate * 1000),
-        realEndDate = new Date(jsonEndDate * 1000),
-        realRemainingDays = Math.round(Math.abs((realStartDate.getTime() - realEndDate.getTime())/(24*60*60*1000))); /* via http://www.vijayjoshi.org/2008/10/24/faq-calculate-number-of-days-between-two-dates-in-javascript/ */
+  // Resolve DNS name
+  helpers.resolveDns(hostName, function(ip){
+    // Connect to ssldecoder.org API
+    helpers.sslDecoderApi(hostName, ip, hostPort, function(response){
+      // Check if JSON contains expected certificate data
+      if (typeof response.data === 'undefined') {
+        helpers.die('Couldn\'t get certificate of ' + hostName + ':' + hostPort);
+      }
 
-    // Only show the CRT if "--only-info" is _NOT_ passed
-    if (!cmdr.onlyInfo) {
-      helpers.out(jsonCrt);
-    }
+      // Store particular info
+      /* jshint -W106 */
+      var jsonCrt = response.data.chain['1'].key.certificate_pem;
 
-    // Only show certificate information if "--only-cert" is _NOT_ passed
-    if (!cmdr.onlyCert) {
-      helpers.out('Host/port: ' + inputHostname + ':' + inputPort);
-      helpers.out('Start date: ' + realStartDate);
-      helpers.out('End date: ' + realEndDate);
-      helpers.out('Remaining days: ' + realRemainingDays);
-    }
-
-    helpers.success('Successfully parsed information');
-
-    // Exit successfully
-    helpers.quit(0);
+      // Call displayCrtInformation()
+      displayCrtInformation(jsonCrt, function(data){
+        helpers.quit(0);
+      });
+    });
   });
-});
+// If "--input-file" is set
+} else if (cmdr.filename) {
+  var fileName = cmdr.filename;
+  helpers.checkIfFileExists(fileName, function(exists){
+    if (exists){
+      haystack = helpers.getFileContent(fileName);
+
+      // Search for certificate in haystack
+      helpers.searchForCertificate(haystack, function(searchResult){
+        // Check for false search result
+        if (searchResult === false){
+          helpers.die('Couldn\'t extract certificate from file "' + fileName + '"');
+        }
+
+        // Call displayCrtInformation()
+        displayCrtInformation(searchResult, function(data){
+          helpers.quit(0);
+        });
+      });
+    } else {
+      helpers.die('Couldn\'t access file "' + fileName + '"');
+    }
+  });
+// otherwise check clipboard...
+} else if (cmdr.clipboard) {
+  // Load clipboard content
+  haystack = helpers.getClipboard();
+
+  // Search for certificate in haystack
+  helpers.searchForCertificate(haystack, function(searchResult){
+    // Check for false search result
+    if (searchResult === false){
+      helpers.die('Couldn\'t extract certificate from clipboard');
+    }
+
+    // Call displayCrtInformation()
+    displayCrtInformation(searchResult, function(data){
+      helpers.quit(0);
+    });
+  });
+} else {
+  helpers.error('No option passed');
+  cmdr.help();
+}

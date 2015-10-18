@@ -7,7 +7,37 @@
  */
 
 var cmdr = require('commander'),
-    helpers = require('./lib/helper');
+    helpers = require('./lib/helper'),
+    openssl = require('./lib/openssl');
+
+/* Functions */
+
+/**
+ * Display decoded CSR information to stdout
+ * @param  {String}   certificate request
+ * @param  {Function} callback
+ * @return {Bool}     result
+ */
+var displayCsrInformation = function(certRequest, cb){
+  openssl.getCertificateRequestInfo(certRequest, function(err, data){
+    if (err === undefined) {
+      // Print out info
+      helpers.out('Certificate Request:'.bold);
+      helpers.out(data.certificate);
+      helpers.out('Subject:'.bold);
+
+      // For each subject element
+      for(var subjectElement in data.subject){
+        helpers.out(' - ' + subjectElement + ': ' + data.subject[subjectElement]);
+      }
+
+      return cb(true);
+    } else {
+      // console.log(err.message);
+      return cb(false);
+    }
+  });
+}
 
 /* Logic */
 
@@ -26,30 +56,31 @@ if (cmdr.filename) {
   helpers.checkIfFileExists(fileName, function(exists){
     if (exists){
       haystack = helpers.getFileContent(fileName);
-      helpers.decodeCsrInformations(haystack, function(decodeResponse){
-        if (decodeResponse !== false) {
-          helpers.success('Successfully decoded information from file "' + fileName + '"');
-          helpers.quit(0);
+      helpers.searchForCertificateRequest(haystack, function(searchResult){
+        if (searchResult !== false) {
+          // Call displayCrtInformation()
+          displayCsrInformation(searchResult, function(data){
+            helpers.quit(0);
+          });
         } else {
-          helpers.error('Couldn\'t decoded information from file "' + fileName + '"');
-          helpers.quit(1);
+          helpers.die('Couldn\'t certificate request in file "' + fileName + '"');
         }
       });
     } else {
-      helpers.error('Couldn\'t access file "' + fileName + '"');
-      helpers.quit(1);
+      helpers.die('Couldn\'t access file "' + fileName + '"');
     }
   });
 // otherwise check clipboard...
 } else if (cmdr.clipboard) {
   haystack = helpers.getClipboard();
-  helpers.decodeCsrInformations(haystack, function(decodeResponse){
-    if (decodeResponse !== false) {
-      helpers.success('Successfully decoded information from clipboard');
-      helpers.quit(0);
+  helpers.searchForCertificateRequest(haystack, function(searchResult){
+    if (searchResult !== false) {
+      // Call displayCrtInformation()
+      displayCsrInformation(searchResult, function(data){
+        helpers.quit(0);
+      });
     } else {
-      helpers.error('Couldn\'t decode information from clipboard');
-      helpers.quit(1);
+      helpers.die('Couldn\'t find certificate request in clipboard');
     }
   });
 } else {
