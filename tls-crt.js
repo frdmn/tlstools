@@ -44,6 +44,7 @@ var displayCrtInformation = function (cert, cb){
 
       return cb(true);
     } else {
+      // console.log(err.message);
       return cb(false);
     }
   });

@@ -33,6 +33,7 @@ var displayCsrInformation = function(certRequest, cb){
 
       return cb(true);
     } else {
+      // console.log(err.message);
       return cb(false);
     }
   });
