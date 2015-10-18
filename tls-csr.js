@@ -8,7 +8,7 @@
 
 var cmdr = require('commander'),
     helpers = require('./lib/helper'),
-    openssl = require('./lib/openssl');
+    openssl = require('openssl-cert-tools');
 
 /* Functions */
 
