@@ -11,11 +11,12 @@
  * the LICENSE file for more information. All Rights Reserved.
  */
 
-var cmdr = require('commander');
+var cmdr = require('commander'),
+    pkg = require('./package.json');
 
 // Initiate the commander.js argument setup
 cmdr
-  .version('1.2.0')
+  .version(pkg.version)
   .command('chain', 'attempt to fix incomplete certificate chain')
   .command('crt', 'display TLS information for given hostname')
   .command('csr', 'decode certificate request information')
