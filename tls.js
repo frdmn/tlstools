@@ -6,9 +6,8 @@
  * \__ \__ \ | || (_) | (_) | \__ \
  * |___/___/_|\__\___/ \___/|_|___/
  *
- * Copyright (c) 2015 by Jonas Friedmann. This source is
- * subject to the Microsoft Permissive License. Please see
- * the LICENSE file for more information. All Rights Reserved.
+ * Copyright (c) 2015 by Jonas Friedmann. Please see the
+ * LICENSE file for more information. All Rights Reserved.
  */
 
 var cmdr = require('commander'),
