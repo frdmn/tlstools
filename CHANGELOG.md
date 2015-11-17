@@ -1,4 +1,10 @@
-<a name="1.2.0"></a>
+<a name="1.3.0"></a>
+# 1.3.0 (2015-11-17)
+
+* Update openssl-cert-tools module to 1.2.0 ([f9b1880](https://github.com/frdmn/tlstools/commit/f9b1880))
+* Version bump to 1.3.0 ([36808cc](https://github.com/frdmn/tlstools/commit/36808cc))
+
+<a name="1.2.1"></a>
 # 1.2.1 (2015-11-17)
 
 * Use openssl.getCertificate() to extract remote certificate ([88ea207](https://github.com/frdmn/tlstools/commit/88ea207))
