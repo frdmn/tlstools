@@ -76,23 +76,15 @@ if(cmdr.hostname){
     var hostPort = '443';
   }
 
-  // Resolve DNS name
-  helpers.resolveDns(hostName, function(ip){
-    // Connect to ssldecoder.org API
-    helpers.sslDecoderApi(hostName, ip, hostPort, function(response){
-      // Check if JSON contains expected certificate data
-      if (typeof response.data === 'undefined') {
-        helpers.die('Couldn\'t get certificate of ' + hostName + ':' + hostPort);
-      }
+  // Extact certificate using OpenSSL
+  openssl.getCertificate(hostName, hostPort, function(err, crt){
+    if (err) {
+      helpers.die('Couldn\'t get certificate of ' + hostName + ':' + hostPort);
+    }
 
-      // Store particular info
-      /* jshint -W106 */
-      var jsonCrt = response.data.chain['1'].key.certificate_pem;
-
-      // Call displayCrtInformation()
-      displayCrtInformation(jsonCrt, function(data){
-        helpers.quit(0);
-      });
+    // Call displayCrtInformation()
+    displayCrtInformation(crt, function(data){
+      helpers.quit(0);
     });
   });
 // If "--input-file" is set
