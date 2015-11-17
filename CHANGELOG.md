@@ -1,6 +1,11 @@
 <a name="1.2.0"></a>
-# 1.2.0 (2015-10-18)
+# 1.2.1 (2015-11-17)
 
+* Use openssl.getCertificate() to extract remote certificate ([88ea207](https://github.com/frdmn/tlstools/commit/88ea207))
+* Version bump to 1.2.1 ([123639f](https://github.com/frdmn/tlstools/commit/123639f))
+
+<a name="1.2.0"></a>
+# 1.2.0 (2015-10-18)
 
 * Add Node based getCertificateInfo() function ([5dd7903](https://github.com/frdmn/tlstools/commit/5dd7903)) and ([58a57da](https://github.com/frdmn/tlstools/commit/58a57da))
 * Add openssl wrapper lib ([5c2f450](https://github.com/frdmn/tlstools/commit/5c2f450))
