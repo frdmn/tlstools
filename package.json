@@ -34,9 +34,6 @@
   },
   "homepage": "https://github.com/frdmn/tlstools#readme",
   "bin": {
-    "tls": "tls.js",
-    "tls-chain": "tls-chain.js",
-    "tls-crt": "tls-crt.js",
-    "tls-csr": "tls-csr.js"
+    "tls": "tls.js"
   }
 }
