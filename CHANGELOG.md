@@ -1,3 +1,11 @@
+
+1.3.1 / 2016-01-11
+==================
+
+  * Check for sub commands, fix [#12](https://github.com/frdmn/tlstools/issues/12)
+  * Version bump to 1.3.1
+  * Remove symlinks of sub commands in $PATH
+
 <a name="1.3.0"></a>
 # 1.3.0 (2015-11-17)
 
