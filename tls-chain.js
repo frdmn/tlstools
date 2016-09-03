@@ -52,8 +52,7 @@ if(cmdr.hostname){
           }
         });
       } else {
-        helpers.error('Couldn\'t extract certificate for "' + hostName + ':' + hostPort + '"');
-        helpers.quit(1);
+        helpers.die('Couldn\'t extract certificate from file "' + fileName + '"');
       }
     });
   });
@@ -69,13 +68,11 @@ if(cmdr.hostname){
           helpers.success('Successfully fixed intermediate from file "' + fileName + '" chain');
           helpers.quit(0);
         } else {
-          helpers.error('Couldn\'t extract certificate from file "' + fileName + '"');
-          helpers.quit(1);
+          helpers.die('Couldn\'t extract certificate from file "' + fileName + '"');
         }
       });
     } else {
-      helpers.error('Couldn\'t access file "' + fileName + '"');
-      helpers.quit(1);
+      helpers.die('Couldn\'t access file "' + fileName + '"');
     }
   });
 // otherwise check clipboard...
@@ -87,8 +84,7 @@ if(cmdr.hostname){
       helpers.success('Successfully fixed intermediate chain from clipboard');
       helpers.quit(0);
     } else {
-      helpers.error('Couldn\'t extract certificate from clipboard');
-      helpers.quit(1);
+      helpers.die('Couldn\'t extract certificate from clipboard');
     }
   });
 } else {
