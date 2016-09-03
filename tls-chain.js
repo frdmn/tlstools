@@ -6,7 +6,8 @@
  */
 
 var cmdr = require('commander'),
-    helpers = require('./lib/helper');
+    helpers = require('./lib/helper')
+    openssl = require('openssl-cert-tools');
 
 /* Logic */
 
@@ -35,22 +36,17 @@ if(cmdr.hostname){
     var hostPort = '443';
   }
 
-  // Resolve DNS name
-  helpers.resolveDns(hostName, function(ip){
-    // Connect to ssldecoder.org API
-    helpers.sslDecoderApi(hostName, ip, hostPort, function(response){
-      // If 'data' element, select and store certificate
-      if (response.data) {
-        /* jshint -W106 */
-        haystack = response.data.chain['1'].key.certificate_pem;
-        /* jshint +W106 */
-        helpers.resolveCertificateChain(haystack, function(repairResponse){
-          if (repairResponse !== false) {
-            helpers.out(repairResponse);
-            helpers.success('Successfully fixed intermediate chain for "' + hostName + '"');
-            helpers.quit(0);
-          }
-        });
+  // Extact certificate using OpenSSL
+  openssl.getCertificate(hostName, hostPort, function(err, crt){
+    if (err) {
+      helpers.die('Couldn\'t extract certificate for "' + hostName + ':' + hostPort + '"');
+    }
+
+    helpers.resolveCertificateChain(crt, function(repairResponse){
+      if (repairResponse !== false) {
+        helpers.out(repairResponse);
+        helpers.success('Successfully fixed intermediate chain for "' + hostName + '"');
+        helpers.quit(0);
       } else {
         helpers.die('Couldn\'t extract certificate from file "' + fileName + '"');
       }
