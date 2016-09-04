@@ -9,35 +9,6 @@ var cmdr = require('commander'),
     helpers = require('./lib/helper'),
     openssl = require('openssl-cert-tools');
 
-/* Functions */
-
-/**
- * Display decoded CSR information to stdout
- * @param  {String}   certificate request
- * @param  {Function} callback
- * @return {Bool}     result
- */
-var displayCsrInformation = function(certRequest, cb){
-  openssl.getCertificateRequestInfo(certRequest, function(err, data){
-    if (err === undefined) {
-      // Print out info
-      helpers.out('Certificate Request:'.bold);
-      helpers.out(data.certificate);
-      helpers.out('Subject:'.bold);
-
-      // For each subject element
-      for(var subjectElement in data.subject){
-        helpers.out(' - ' + subjectElement + ': ' + data.subject[subjectElement]);
-      }
-
-      return cb(true);
-    } else {
-      // console.log(err.message);
-      return cb(false);
-    }
-  });
-}
-
 /* Logic */
 
 // Setup sub command options
@@ -58,7 +29,7 @@ if (cmdr.filename) {
       helpers.searchForCertificateRequest(haystack, function(searchResult){
         if (searchResult !== false) {
           // Call displayCrtInformation()
-          displayCsrInformation(searchResult, function(data){
+          helpers.displayCsrInformation(searchResult, function(data){
             helpers.quit(0);
           });
         } else {
@@ -75,7 +46,7 @@ if (cmdr.filename) {
   helpers.searchForCertificateRequest(haystack, function(searchResult){
     if (searchResult !== false) {
       // Call displayCrtInformation()
-      displayCsrInformation(searchResult, function(data){
+      helpers.displayCsrInformation(searchResult, function(data){
         helpers.quit(0);
       });
     } else {
