@@ -1,3 +1,8 @@
+1.3.2 / 2016-09-05
+==================
+
+  * Remove unnecessary functions [#6](https://github.com/frdmn/tlstools/issues/6)
+  * Cleanup code
 
 1.3.1 / 2016-01-11
 ==================
