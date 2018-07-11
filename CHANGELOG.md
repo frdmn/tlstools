@@ -1,3 +1,8 @@
+1.3.3 / 2018-07-11
+==================
+
+  * Fix NPM vulnerabilities and replace copy-paste with clipboardy ([1215de3...41ea569](https://github.com/frdmn/tlstools/compare/1215de3...41ea569))
+
 1.3.2 / 2016-09-05
 ==================
 
