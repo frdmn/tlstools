@@ -7,7 +7,7 @@
     "clipboardy": "^2.3.0",
     "colors": "^1.4.0",
     "commander": "^6.1.0",
-    "openssl-cert-tools": "^1.4.0",
+    "openssl-cert-tools": "^1.4.3",
     "request": "^2.88.2",
     "shelljs": "^0.8.4"
   },
