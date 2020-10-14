@@ -18,7 +18,7 @@ var cmdr = require('commander'),
 cmdr
   .version(pkg.version)
   .command('chain', 'attempt to fix incomplete certificate chain')
-  .command('check <host[:port]>', 'check remote intermediate chain')
+  .command('check', 'check remote certificate chain')
   .command('crt', 'display TLS information for given hostname')
   .command('csr', 'decode certificate request information')
   .parse(process.argv);
