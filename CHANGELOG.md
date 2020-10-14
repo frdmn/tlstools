@@ -1,3 +1,10 @@
+1.4.0 / 2020-10-14
+==================
+
+* Fix `Couldn't extract certificate for "{{HOSTNAME}}"` error ([#14](https://github.com/frdmn/tlstools/issues/14))
+* New feature to check certificate chain of remote host ([#15](https://github.com/frdmn/tlstools/pull/15))
+* Fix NPM vulnerabilities
+
 1.3.3 / 2018-07-11
 ==================
 
