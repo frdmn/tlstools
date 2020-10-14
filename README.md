@@ -3,9 +3,10 @@ TLStools
 
 Command line tool to analyze, troubleshoot or inspect TLS certificates, requests or keys. Written in NodeJS.
 
-* `tls chain` - Attempt to fix an incomplete certificate chain
-* `tls crt` - get renewal informations and the CRT (certificate) itself based on a host
-* `tls csr` - simple decypher and parse informations out a CSR (Certificate Sign Request)
+* [`tls chain`](#tls-chain) - Attempt to fix an incomplete certificate chain
+* [`tls check`](#tls-check) - Check completeness of remote certificate chain
+* [`tls crt`](#tls-crt) - get renewal informations and the CRT (certificate) itself based on a host
+* [`tls csr`](#tls-csr) - simple decypher and parse informations out a CSR (Certificate Sign Request)
 
 # Requirements
 
@@ -21,19 +22,18 @@ npm install -g tlstools
 
 ```shell
 $ tls
-  Usage: tls [options] [command]
+Usage: tls [options] [command]
 
-  Commands:
+Options:
+  -V, --version   output the version number
+  -h, --help      display help for command
 
-    chain       attempt to fix incomplete certificate chain
-    crt         display TLS information for given hostname
-    csr         decode certificate request information
-    help [cmd]  display help for [cmd]
-
-  Options:
-
-    -h, --help     output usage information
-    -V, --version  output the version number
+Commands:
+  chain           attempt to fix incomplete certificate chain
+  check           check remote certificate chain
+  crt             display TLS information for given hostname
+  csr             decode certificate request information
+  help [command]  display help for command
 ```
 
 ## Sub commands
@@ -44,14 +44,14 @@ Attempt to fix an incomplete certificate chain based on an passed certficate.
 
 ```shell
 $ tls chain -h
-  Usage: tls chain [options]
+Usage: tls chain [options]
 
-  Options:
+Options:
 
-    -h, --help                    output usage information
-    -f, --filename <file>         search certificate in file
-    -H, --hostname <host[:port]>  use certificate from remote hostname
-    -c, --clipboard               search certificate in clipboard
+  -h, --help                    output usage information
+  -f, --filename <file>         search certificate in file
+  -H, --hostname <host[:port]>  use certificate from remote hostname
+  -c, --clipboard               search certificate in clipboard
 ```
 
 ---
@@ -115,14 +115,14 @@ Decode certificate informations.
 
 ```shell
 $ tls crt -h
-  Usage: tls crt [options]
+Usage: tls crt [options]
 
-  Options:
+Options:
 
-    -h, --help                    output usage information
-    -f, --filename <file>         search certificate in file
-    -H, --hostname <host[:port]>  use certificate from remote hostname
-    -c, --clipboard               search certificate in clipboard
+  -h, --help                    output usage information
+  -f, --filename <file>         search certificate in file
+  -H, --hostname <host[:port]>  use certificate from remote hostname
+  -c, --clipboard               search certificate in clipboard
 ```
 
 ---
@@ -181,13 +181,13 @@ Decode and display information from certificate sign requests.
 
 ```shell
 $ tls csr -h
-  Usage: tls csr [options]
+Usage: tls csr [options]
 
-  Options:
+Options:
 
-    -h, --help             output usage information
-    -f, --filename <file>  search CRT or CSR in file
-    -c, --clipboard        search CSR in clipboard
+  -h, --help             output usage information
+  -f, --filename <file>  search CRT or CSR in file
+  -c, --clipboard        search CSR in clipboard
 ```
 
 ---
@@ -227,7 +227,29 @@ Subject:
  ✔ Successfully decoded information from clipboard
 ```
 
+### tls `check`
+
+This command lets you know if the intermediate certificate chain of a certain remote hostname is correct/complete.
+
+```shell
+$ tls check -h
+Usage: tls check [options]
+
+Options:
+  -H, --hostname <host[:port]>  use certificate from remote hostname
+  -h, --help                    display help for command
+```
+
+---
+
+Show chain status from remote host "frd.mn":
+
+```shell
+$ tls check -H frd.mn
+ ✔ Intermediate chain "frd.mn:443" seems to be complete/correct
+```
+
 # Credits
 
-* @[zakjan](https://github.com/zakjan/) for the [`cert-chain-resolver.sh`](vendor/cert-chain-resolver.sh) shell script:  
+* @[zakjan](https://github.com/zakjan/) for the [`cert-chain-resolver.sh`](vendor/cert-chain-resolver.sh) shell script:
 https://github.com/zakjan/cert-chain-resolver/
