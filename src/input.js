@@ -72,7 +72,7 @@ export async function readFileContent(file) {
     return await readFile(file, 'utf8');
   } catch (err) {
     if (err.code === 'ENOENT') {
-      throw new Error(`File "${file}" does not exist`);
+      throw new Error(`File "${file}" does not exist`, { cause: err });
     }
     throw err;
   }
@@ -132,7 +132,7 @@ export async function obtainCertificate({ hostname, filename, clipboard: fromCli
     try {
       return await openssl.getCertificate(host, port);
     } catch (err) {
-      throw new Error(`Couldn't get certificate of ${host}:${port}: ${err.message}`);
+      throw new Error(`Couldn't get certificate of ${host}:${port}: ${err.message}`, { cause: err });
     }
   }
 

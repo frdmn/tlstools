@@ -142,7 +142,7 @@ async function fetchIssuerCertificate(uri, timeout = DEFAULT_FETCH_TIMEOUT) {
   try {
     return await parseIssuerCertificate(Buffer.from(await response.arrayBuffer()), response.headers.get('content-type'));
   } catch (err) {
-    throw new Error(`Couldn't parse issuer certificate from "${uri}": ${err.message}`);
+    throw new Error(`Couldn't parse issuer certificate from "${uri}": ${err.message}`, { cause: err });
   }
 }
 
