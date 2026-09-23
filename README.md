@@ -11,6 +11,7 @@ Command line tool to analyze, troubleshoot or inspect TLS certificates, requests
 * [`tls check`](#tls-check) - Check completeness of remote certificate chain
 * [`tls crt`](#tls-crt) - Get renewal informations and the certificate itself based on a host or file
 * [`tls csr`](#tls-csr) - Simple decypher and parse informations out of a CSR (Certificate Signing Request)
+* [`tls match`](#tls-match) - Check that a certificate, private key and/or CSR share the same public key
 
 # Requirements
 
@@ -248,6 +249,52 @@ $ tls check -H incomplete-chain.badssl.com
     ✖ Root YR
 
   ↳ https://www.ssllabs.com/ssltest/analyze.html?d=incomplete-chain.badssl.com:443&latest
+```
+
+### tls `match`
+
+Check whether a certificate, a private key and/or a certificate signing
+request belong to the same keypair, by comparing the SHA-256 hash of
+their public keys (works for RSA, EC and Ed25519). Provide at least two
+of the inputs; the command exits with `0` if they all match and `1` if
+they do not:
+
+```shell
+$ tls match -h
+Usage: tls match [options]
+
+check that a certificate, private key and/or CSR share the same public key
+
+Options:
+  --crt <file>  certificate file to compare
+  --key <file>  private key file to compare
+  --csr <file>  certificate request file to compare
+  --json        output machine-readable JSON instead of the formatted report
+  -h, --help    display help for command
+```
+
+---
+
+Verify that a certificate, its key and a CSR belong together before
+deploying or submitting the request:
+
+```shell
+$ tls match --crt frd.mn.crt --key frd.mn.key --csr frd.mn.csr
+  Certificate  frd.mn.crt  1dfc1605fbad358d
+  Key          frd.mn.key  1dfc1605fbad358d
+  Request      frd.mn.csr  1dfc1605fbad358d
+
+ ✔ all inputs share the same public key
+```
+
+A mismatch shows the deviating hash in red and exits with `1`:
+
+```shell
+$ tls match --crt frd.mn.crt --key old.key
+  Certificate  frd.mn.crt  1dfc1605fbad358d
+  Key          old.key     a287ffab762cc69a
+
+ ✖ inputs do not all share the same public key
 ```
 
 # Development

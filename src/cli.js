@@ -9,6 +9,7 @@ import { crt } from './commands/crt.js';
 import { chain } from './commands/chain.js';
 import { check } from './commands/check.js';
 import { csr } from './commands/csr.js';
+import { match } from './commands/match.js';
 
 const packageJson = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
 
@@ -21,6 +22,7 @@ program
   .addCommand(chain)
   .addCommand(check)
   .addCommand(crt)
-  .addCommand(csr);
+  .addCommand(csr)
+  .addCommand(match);
 
 export default program;
