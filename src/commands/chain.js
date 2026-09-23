@@ -4,6 +4,7 @@
  */
 
 import { Command } from 'commander';
+import pc from 'picocolors';
 import { out, success } from '../output.js';
 import { obtainCertificate, resolveHostname } from '../input.js';
 import { resolveChain } from '../chain-resolver.js';
@@ -27,6 +28,6 @@ export const chain = new Command('chain')
       throw new Error('Unable to resolve intermediate certificates: no usable AIA "CA Issuers" information found');
     }
 
-    out(resolved.join('\n'));
+    out(pc.dim(resolved.join('\n')));
     success(`Resolved certificate chain with ${resolved.length - 1} intermediate certificate(s)`);
   });

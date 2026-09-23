@@ -119,20 +119,28 @@ Show certificate informations from remote host "frd.mn":
 
 ```shell
 $ tls crt frd.mn
-Certificate:
+Certificate (PEM):
 -----BEGIN CERTIFICATE-----
 ...
 -----END CERTIFICATE-----
-Issuer:
- - CN: WE1
- - O: Google Trust Services
- - C: US
-Subject:
- - CN: frd.mn
-Valid from: 2026-09-18T04:30:49.000Z
-Valid to: 2026-12-17T05:30:31.000Z
-Remaining days: 84
+
+  Issuer
+    CN   WE1
+    O    Google Trust Services
+    C    US
+  Subject
+    CN   frd.mn
+  Validity
+    From  2026-09-18 04:30:49 UTC
+    To    2026-12-17 05:30:33 UTC
+
+ ✔ frd.mn — valid for another 84 days
 ```
+
+The verdict line is colored by urgency: green while the certificate is
+comfortable, yellow within 30 days of expiry, red within 7 days or after
+expiry. Colors disable automatically when output is piped (`NO_COLOR`
+and `FORCE_COLOR` are respected).
 
 ### tls `csr`
 
@@ -157,14 +165,17 @@ following command:
 
 ```shell
 $ tls csr -c
-Certificate Request:
+Request (PEM):
 -----BEGIN CERTIFICATE REQUEST-----
 ...
 -----END CERTIFICATE REQUEST-----
-Subject:
- - C: DE
- - O: Test Org
- - CN: test.example.com
+
+  Subject
+    CN  test.example.com
+    O   Test Org
+    C   DE
+
+ ℹ certificate signing request
 ```
 
 ### tls `check`
@@ -195,7 +206,20 @@ Show chain status from remote host "frd.mn":
 
 ```shell
 $ tls check -H frd.mn
- ✔ Intermediate chain "frd.mn:443" seems to be complete/correct
+ ✔ frd.mn:443 — chain complete
+```
+
+An incomplete chain exits with `1`, names the missing intermediates and
+links to SSL Labs for details:
+
+```shell
+$ tls check -H incomplete-chain.badssl.com
+ ✖ incomplete-chain.badssl.com:443 — chain incomplete, 2 intermediates missing
+
+    ✖ YR2
+    ✖ Root YR
+
+  ↳ https://www.ssllabs.com/ssltest/analyze.html?d=incomplete-chain.badssl.com:443&latest
 ```
 
 # Development

@@ -4,10 +4,22 @@
  */
 
 import { Command } from 'commander';
+import pc from 'picocolors';
 import openssl from 'openssl-cert-tools';
 import { success, error } from '../output.js';
 import { parseHostOption, resolveHostname } from '../input.js';
 import { resolveChain, certBody } from '../chain-resolver.js';
+
+/**
+ * Best-effort human-readable name for a PEM certificate
+ * (subject CN, or all subject values joined).
+ * @param {string} pem
+ * @returns {Promise<string>}
+ */
+async function certName(pem) {
+  const { subject } = await openssl.getCertificateInfo(pem);
+  return subject.CN ?? Object.values(subject).join(', ');
+}
 
 export const check = new Command('check')
   .description('check remote certificate chain')
@@ -32,13 +44,24 @@ export const check = new Command('check')
     const missing = resolved.slice(1).filter((pem) => !servedBodies.includes(certBody(pem)));
 
     if (missing.length === 0) {
-      success(`Intermediate chain "${host}:${port}" seems to be complete/correct`);
+      success(`${pc.bold(`${host}:${port}`)} ${pc.green('— chain complete')}`);
       return;
     }
 
-    error(`Intermediate chain for "${host}:${port}" seems to be incomplete (${missing.length} intermediate certificate(s) missing)`);
+    const intermediateWord = missing.length === 1 ? 'intermediate' : 'intermediates';
+    error(`${pc.bold(`${host}:${port}`)} ${pc.red(`— chain incomplete, ${missing.length} ${intermediateWord} missing`)}`);
     console.error('');
-    console.error('   For detailed information, please check using SSLlabs:\n');
-    console.error(`   https://www.ssllabs.com/ssltest/analyze.html?d=${host}:${port}&latest`);
+    const names = await Promise.all(missing.map(async (pem, i) => {
+      try {
+        return await certName(pem);
+      } catch {
+        return `Intermediate ${i + 1}`;
+      }
+    }));
+    for (const name of names) {
+      console.error(`    ${pc.red('✖')} ${name}`);
+    }
+    console.error('');
+    console.error(`  ${pc.dim('↳')} ${pc.underline(pc.cyan(`https://www.ssllabs.com/ssltest/analyze.html?d=${host}:${port}&latest`))}`);
     process.exitCode = 1;
   });

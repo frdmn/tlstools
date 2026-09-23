@@ -66,15 +66,18 @@ test('--version prints the package version', async () => {
 test('crt accepts a positional hostname', async () => {
   const result = await runCli(['crt', `localhost:${incompleteChainPort}`]);
   assert.equal(result.code, 0);
-  assert.match(result.stdout, /Subject:/);
-  assert.match(result.stdout, /CN: localhost/);
+  assert.match(result.stdout, /Certificate \(PEM\):/);
+  assert.match(result.stdout, / {2}Subject\n\s+CN\s+localhost/);
+  assert.match(result.stdout, / {2}Validity\n\s+From\s/);
+  assert.match(result.stderr, /localhost:\d+ — valid for another \d+ days?/);
+  assert.doesNotMatch(result.stdout, /undefined/);
 });
 
 test('crt reads a certificate from a file', async () => {
   const result = await runCli(['crt', '-f', fixturePath('leaf.pem')]);
   assert.equal(result.code, 0);
-  assert.match(result.stdout, /Issuer:/);
-  assert.match(result.stdout, /Remaining days:/);
+  assert.match(result.stdout, / {2}Issuer\n\s+CN\s+tlstools test intermediate CA/);
+  assert.match(result.stderr, /leaf\.pem — valid for another \d+ days?/);
 });
 
 test('crt fails without an input source', async () => {
@@ -92,14 +95,14 @@ test('crt fails on a missing file', async () => {
 test('check reports an incomplete chain with exit code 1', async () => {
   const result = await runCli(['check', `localhost:${incompleteChainPort}`]);
   assert.equal(result.code, 1);
-  assert.match(result.stderr, /seems to be incomplete/);
-  assert.match(result.stderr, /1 intermediate certificate\(s\) missing/);
+  assert.match(result.stderr, /chain incomplete, 1 intermediate missing/);
+  assert.match(result.stderr, /tlstools test intermediate CA/);
 });
 
 test('check reports a complete chain with exit code 0', async () => {
   const result = await runCli(['check', `localhost:${completeChainPort}`]);
   assert.equal(result.code, 0);
-  assert.match(result.stderr, /seems to be complete\/correct/);
+  assert.match(result.stderr, /— chain complete/);
 });
 
 test('chain resolves the intermediate over AIA and prints only PEM to stdout', async () => {
@@ -112,8 +115,9 @@ test('chain resolves the intermediate over AIA and prints only PEM to stdout', a
 test('csr decodes a certificate request from a file', async () => {
   const result = await runCli(['csr', '-f', fixturePath('csr.pem')]);
   assert.equal(result.code, 0);
-  assert.match(result.stdout, /Certificate Request:/);
-  assert.match(result.stdout, /CN: csr.example.com/);
+  assert.match(result.stdout, /Request \(PEM\):/);
+  assert.match(result.stdout, / {2}Subject\n\s+CN\s+csr\.example\.com/);
+  assert.doesNotMatch(result.stdout, /undefined/);
 });
 
 test('unknown commands fail', async () => {
