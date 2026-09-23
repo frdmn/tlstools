@@ -7,6 +7,7 @@
  */
 
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import openssl from 'openssl-cert-tools';
 import { extractCertificate } from './input.js';
 
@@ -79,6 +80,24 @@ export function derToPem(der) {
  */
 export function certBody(pem) {
   return pem.replace(/-----(?:BEGIN|END) CERTIFICATE-----/g, '').replace(/\s+/g, '');
+}
+
+/**
+ * Stable identity of the certificate authority a certificate represents:
+ * SHA-256 over the subject public key and the subject DN. Cross-signed
+ * variants of the same CA certificate (identical key and subject,
+ * different issuer) share this identity, unlike a byte-level DER
+ * comparison — chain completeness must be judged by it, since servers
+ * may serve a different cross-signing than their AIA points distribute
+ * (e.g. Google's WE1 intermediate).
+ * @param {string} pem PEM encoded certificate
+ * @returns {Promise<string>} hex digest
+ */
+export async function certIdentity(pem) {
+  const pubkey = await runOpenSSL(['x509', '-noout', '-pubkey'], pem);
+  const { subject } = await openssl.getCertificateInfo(pem);
+  const spki = pubkey.replace(/-----(?:BEGIN|END) [A-Z ]+-----/g, '').replace(/\s+/g, '');
+  return createHash('sha256').update(`${spki}\n${JSON.stringify(Object.entries(subject))}`).digest('hex');
 }
 
 /**

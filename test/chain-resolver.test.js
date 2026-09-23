@@ -7,6 +7,7 @@ import {
   getAiaIssuersUri,
   derToPem,
   certBody,
+  certIdentity,
   parseIssuerCertificate
 } from '../src/chain-resolver.js';
 import { fixturePath } from './helpers.js';
@@ -26,6 +27,19 @@ test('certBody ignores PEM formatting differences', () => {
   const a = '-----BEGIN CERTIFICATE-----\nabc\ndef\n-----END CERTIFICATE-----';
   const b = '-----BEGIN CERTIFICATE-----\nabcdef\n-----END CERTIFICATE-----';
   assert.equal(certBody(a), certBody(b));
+});
+
+test('certIdentity matches cross-signed variants of the same CA', async () => {
+  const signed = await readFixture('intermediate.pem');
+  const crossSigned = await readFixture('intermediate-cross.pem');
+
+  // Same key and subject, but different issuers make them different certs
+  assert.notEqual(certBody(signed), certBody(crossSigned));
+  assert.equal(await certIdentity(signed), await certIdentity(crossSigned));
+
+  // ...and a different certificate entirely keeps its own identity
+  const root = await readFixture('root.pem');
+  assert.notEqual(await certIdentity(signed), await certIdentity(root));
 });
 
 test('getAiaIssuersUri extracts the CA Issuers URI from a leaf', async () => {

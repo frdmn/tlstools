@@ -8,7 +8,7 @@ import pc from 'picocolors';
 import openssl from 'openssl-cert-tools';
 import { success, error, withSpinner, plural, printJson } from '../output.js';
 import { parseHostOption, resolveHostname } from '../input.js';
-import { resolveChain, certBody } from '../chain-resolver.js';
+import { resolveChain, certIdentity } from '../chain-resolver.js';
 
 /**
  * Best-effort human-readable name for a PEM certificate
@@ -42,8 +42,16 @@ export const check = new Command('check')
       }
 
       const resolved = await resolveChain(served[0]);
-      const servedBodies = served.slice(1).map(certBody);
-      const missingPems = resolved.slice(1).filter((pem) => !servedBodies.includes(certBody(pem)));
+      // Compare by key identity, not bytes: the AIA distribution point may
+      // serve a different cross-signing of an intermediate than the one
+      // the server presents — same CA, same key, valid chain either way.
+      const servedIdentities = new Set(await Promise.all(served.slice(1).map(certIdentity)));
+      const missingPems = [];
+      for (const pem of resolved.slice(1)) {
+        if (!servedIdentities.has(await certIdentity(pem))) {
+          missingPems.push(pem);
+        }
+      }
       const missingNames = await Promise.all(missingPems.map(async (pem, i) => {
         try {
           return await certName(pem);

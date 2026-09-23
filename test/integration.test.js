@@ -15,21 +15,27 @@ let aiaServer;
 let incompleteChainServer;
 /** @type {import('node:tls').Server} */
 let completeChainServer;
+/** @type {import('node:tls').Server} */
+let crossVariantChainServer;
 let incompleteChainPort;
 let completeChainPort;
+let crossVariantChainPort;
 
 before(async () => {
-  // Distribution point serving the intermediate certificate in DER form
+  // Distribution point serving the intermediate certificate in DER form,
+  // plus a cross-signed variant of it (same key, different issuer)
   const intermediateDer = await readFile(fixturePath('intermediate.der'));
+  const intermediateCrossDer = await readFile(fixturePath('intermediate-cross.der'));
   aiaServer = createHttpServer((request, response) => {
     response.setHeader('content-type', 'application/pkix-cert');
-    response.end(intermediateDer);
+    response.end(request.url.includes('cross') ? intermediateCrossDer : intermediateDer);
   });
   await new Promise((resolve) => aiaServer.listen(AIA_PORT, '127.0.0.1', resolve));
 
   const key = await readFile(fixturePath('leaf.key'));
   const leaf = await readFile(fixturePath('leaf.pem'));
   const fullChain = await readFile(fixturePath('leaf-fullchain.pem'));
+  const leafCrossFullChain = await readFile(fixturePath('leaf-cross-fullchain.pem'));
 
   // Serves only the leaf: an incomplete chain
   incompleteChainServer = createTlsServer({ key, cert: leaf }, (socket) => socket.end());
@@ -48,13 +54,25 @@ before(async () => {
       resolve();
     });
   });
+
+  // Serves the root-signed intermediate while the leaf's AIA distributes
+  // a cross-signed variant of it: complete, but only key-identity
+  // comparison recognizes it as such (mirrors Google's dual-path WE1)
+  crossVariantChainServer = createTlsServer({ key, cert: leafCrossFullChain }, (socket) => socket.end());
+  await new Promise((resolve) => {
+    crossVariantChainServer.listen(0, '127.0.0.1', () => {
+      crossVariantChainPort = crossVariantChainServer.address().port;
+      resolve();
+    });
+  });
 });
 
 after(async () => {
   await Promise.all([
     new Promise((resolve) => aiaServer.close(resolve)),
     new Promise((resolve) => incompleteChainServer.close(resolve)),
-    new Promise((resolve) => completeChainServer.close(resolve))
+    new Promise((resolve) => completeChainServer.close(resolve)),
+    new Promise((resolve) => crossVariantChainServer.close(resolve))
   ]);
 });
 
@@ -101,6 +119,12 @@ test('check reports an incomplete chain with exit code 1', async () => {
 
 test('check reports a complete chain with exit code 0', async () => {
   const result = await runCli(['check', `localhost:${completeChainPort}`]);
+  assert.equal(result.code, 0);
+  assert.match(result.stderr, /— chain complete/);
+});
+
+test('check accepts a served cross-signed variant of a missing intermediate', async () => {
+  const result = await runCli(['check', `localhost:${crossVariantChainPort}`]);
   assert.equal(result.code, 0);
   assert.match(result.stderr, /— chain complete/);
 });

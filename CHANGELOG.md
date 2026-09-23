@@ -1,6 +1,7 @@
 Unreleased
 ==========
 
+* Fix `tls check` false positives when the AIA distribution point serves a different cross-signing of an intermediate than the one the server presents (e.g. Google's WE1): intermediates are now compared by subject and public key identity instead of byte-identical DER
 * Add `--json` flag to all commands for machine-readable output; exit codes are unchanged (e.g. `tls check --json` still exits with `1` on an incomplete chain)
 * `tls chain` status message pluralizes the intermediate certificate count
 * Show a spinner on interactive terminals while certificate chains are fetched and resolved

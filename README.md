@@ -206,7 +206,9 @@ Request (PEM):
 
 This command lets you know if the intermediate certificate chain of a certain
 remote hostname is correct/complete. It compares the intermediates served
-during the TLS handshake against the chain resolved via AIA. The command
+during the TLS handshake against the chain resolved via AIA, matching them
+by public key identity so that cross-signed variants of the same intermediate
+(as distributed by CAs like Google) count as present. The command
 exits with `0` if the chain is complete and `1` if it is not, so it can be
 used in scripts and cronjobs:
 
