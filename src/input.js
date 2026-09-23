@@ -100,6 +100,18 @@ export function extractCertificateRequest(text) {
 }
 
 /**
+ * Extract the first PEM private key block from a string, covering the
+ * plain PKCS#8 form as well as the RSA, EC, DSA, ENCRYPTED and OPENSSH
+ * specific labels.
+ * @param {string} text
+ * @returns {string|null}
+ */
+export function extractPrivateKey(text) {
+  const match = text.match(/-----BEGIN (?:RSA |EC |DSA |ENCRYPTED |OPENSSH )?PRIVATE KEY-----[\s\S]*?-----END (?:RSA |EC |DSA |ENCRYPTED |OPENSSH )?PRIVATE KEY-----/);
+  return match ? match[0] : null;
+}
+
+/**
  * Validate that exactly one of the given input sources is set.
  * @param {object} sources
  * @param {string} label description of the expected input, for error messages

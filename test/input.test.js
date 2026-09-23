@@ -7,6 +7,7 @@ import {
   resolveHostname,
   extractCertificate,
   extractCertificateRequest,
+  extractPrivateKey,
   obtainCertificate
 } from '../src/input.js';
 import { fixturePath } from './helpers.js';
@@ -58,6 +59,19 @@ test('extractCertificateRequest handles plain and NEW markers', () => {
     '-----BEGIN NEW CERTIFICATE REQUEST-----\nabc\n-----END NEW CERTIFICATE REQUEST-----'
   );
   assert.equal(extractCertificateRequest('nothing'), null);
+});
+
+test('extractPrivateKey handles all PEM key labels', () => {
+  for (const label of ['PRIVATE KEY', 'RSA PRIVATE KEY', 'EC PRIVATE KEY', 'ENCRYPTED PRIVATE KEY', 'OPENSSH PRIVATE KEY']) {
+    const pem = `-----BEGIN ${label}-----\nabc==\n-----END ${label}-----`;
+    assert.equal(extractPrivateKey(pem), pem);
+  }
+});
+
+test('extractPrivateKey finds the first key block in noise and returns null without a match', () => {
+  const haystack = `some header\n-----BEGIN RSA PRIVATE KEY-----\nabc==\n-----END RSA PRIVATE KEY-----\ntail`;
+  assert.equal(extractPrivateKey(haystack), '-----BEGIN RSA PRIVATE KEY-----\nabc==\n-----END RSA PRIVATE KEY-----');
+  assert.equal(extractPrivateKey('no key here'), null);
 });
 
 test('obtainCertificate reads a certificate from a file', async () => {
