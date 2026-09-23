@@ -44,6 +44,10 @@ Commands:
   help [command]              display help for command
 ```
 
+All sub commands also support a `--json` flag that replaces the formatted
+report with machine-readable JSON on stdout. Exit codes are unchanged, so
+`tls check --json` still exits with `1` on an incomplete chain.
+
 ## Sub commands
 
 ### tls `chain`
@@ -67,6 +71,8 @@ Options:
   -H, --hostname <host[:port]>  use certificate from remote hostname
   -f, --filename <file>         use certificate from local file
   -c, --clipboard               use certificate from clipboard
+  --json                        output machine-readable JSON instead of the
+                                formatted report
   -h, --help                    display help for command
 ```
 
@@ -76,7 +82,7 @@ Resolve the chain of a remote host and save it to a file:
 
 ```shell
 $ tls chain frd.mn > frd.mn-fullchain.pem
- ✔ Resolved certificate chain with 1 intermediate certificate(s)
+ ✔ Resolved certificate chain with 1 intermediate certificate
 ```
 
 Assuming you have copied the certificate to fix into your system clipboard:
@@ -89,7 +95,7 @@ $ tls chain -c
 -----BEGIN CERTIFICATE-----
 ...
 -----END CERTIFICATE-----
- ✔ Resolved certificate chain with 1 intermediate certificate(s)
+ ✔ Resolved certificate chain with 1 intermediate certificate
 ```
 
 ### tls `crt`
@@ -110,6 +116,8 @@ Options:
   -H, --hostname <host[:port]>  use certificate from remote hostname
   -f, --filename <file>         use certificate from local file
   -c, --clipboard               use certificate from clipboard
+  --json                        output machine-readable JSON instead of the
+                                formatted report
   -h, --help                    display help for command
 ```
 
@@ -137,6 +145,20 @@ Certificate (PEM):
  ✔ frd.mn — valid for another 84 days
 ```
 
+The same information as machine-readable JSON:
+
+```shell
+$ tls crt frd.mn --json
+{
+  "certificate": "-----BEGIN CERTIFICATE----- ...",
+  "issuer": { "CN": "WE1", "O": "Google Trust Services", "C": "US" },
+  "subject": { "CN": "frd.mn" },
+  "validFrom": "2026-09-18T04:30:49.000Z",
+  "validTo": "2026-12-17T05:30:33.000Z",
+  "remainingDays": 84
+}
+```
+
 The verdict line is colored by urgency: green while the certificate is
 comfortable, yellow within 30 days of expiry, red within 7 days or after
 expiry. Colors disable automatically when output is piped (`NO_COLOR`
@@ -155,6 +177,8 @@ decode certificate request information
 Options:
   -f, --filename <file>  use certificate request from local file
   -c, --clipboard        use certificate request from clipboard
+  --json                 output machine-readable JSON instead of the formatted
+                         report
   -h, --help             display help for command
 ```
 
@@ -197,6 +221,8 @@ Arguments:
 
 Options:
   -H, --hostname <host[:port]>  check certificate chain of remote hostname
+  --json                        output machine-readable JSON instead of the
+                                formatted report
   -h, --help                    display help for command
 ```
 

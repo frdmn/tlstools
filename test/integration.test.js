@@ -112,6 +112,51 @@ test('chain resolves the intermediate over AIA and prints only PEM to stdout', a
   assert.match(result.stderr, /Resolved certificate chain with 1 intermediate certificate\r?\n/);
 });
 
+test('crt --json outputs machine-readable certificate info', async () => {
+  const result = await runCli(['crt', '-f', fixturePath('leaf.pem'), '--json']);
+  assert.equal(result.code, 0);
+  const data = JSON.parse(result.stdout);
+  assert.equal(data.issuer.CN, 'tlstools test intermediate CA');
+  assert.equal(data.subject.CN, 'localhost');
+  assert.match(data.certificate, /^-----BEGIN CERTIFICATE-----/);
+  assert.match(data.validFrom, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+  assert.equal(typeof data.remainingDays, 'number');
+});
+
+test('csr --json outputs machine-readable request info', async () => {
+  const result = await runCli(['csr', '-f', fixturePath('csr.pem'), '--json']);
+  assert.equal(result.code, 0);
+  const data = JSON.parse(result.stdout);
+  assert.equal(data.subject.CN, 'csr.example.com');
+  assert.match(data.certificateRequest, /^-----BEGIN CERTIFICATE REQUEST-----/);
+});
+
+test('check --json reports chain completeness with matching exit code', async () => {
+  const ok = await runCli(['check', `localhost:${completeChainPort}`, '--json']);
+  assert.equal(ok.code, 0);
+  assert.deepEqual(JSON.parse(ok.stdout), {
+    host: 'localhost',
+    port: completeChainPort,
+    complete: true,
+    missingIntermediates: []
+  });
+
+  const bad = await runCli(['check', `localhost:${incompleteChainPort}`, '--json']);
+  assert.equal(bad.code, 1);
+  const data = JSON.parse(bad.stdout);
+  assert.equal(data.complete, false);
+  assert.deepEqual(data.missingIntermediates, ['tlstools test intermediate CA']);
+});
+
+test('chain --json outputs the resolved chain as JSON', async () => {
+  const result = await runCli(['chain', '-f', fixturePath('leaf.pem'), '--json']);
+  assert.equal(result.code, 0);
+  const data = JSON.parse(result.stdout);
+  assert.equal(data.intermediateCount, 1);
+  assert.equal(data.chain.length, 2);
+  assert.ok(data.chain.every((pem) => pem.includes('-----BEGIN CERTIFICATE-----')));
+});
+
 test('csr decodes a certificate request from a file', async () => {
   const result = await runCli(['csr', '-f', fixturePath('csr.pem')]);
   assert.equal(result.code, 0);

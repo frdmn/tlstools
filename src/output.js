@@ -92,6 +92,16 @@ export function humanDate(date) {
 }
 
 /**
+ * Print a value as pretty-printed JSON to stdout. This is the entire
+ * output of a command in --json mode, so nothing else may print to
+ * stdout before or after it.
+ * @param {object} value
+ */
+export function printJson(value) {
+  out(JSON.stringify(value, null, 2));
+}
+
+/**
  * Print document-style sections: a muted bold header followed by
  * indented, aligned key/value pairs. Used for per-component
  * distinguished names and the validity dates.
