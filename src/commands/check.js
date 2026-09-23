@@ -6,7 +6,7 @@
 import { Command } from 'commander';
 import pc from 'picocolors';
 import openssl from 'openssl-cert-tools';
-import { success, error } from '../output.js';
+import { success, error, withSpinner } from '../output.js';
 import { parseHostOption, resolveHostname } from '../input.js';
 import { resolveChain, certBody } from '../chain-resolver.js';
 
@@ -32,16 +32,27 @@ export const check = new Command('check')
     }
     const { host, port } = parseHostOption(target);
 
-    let served;
-    try {
-      served = await openssl.getCertificateChain(host, port);
-    } catch (err) {
-      throw new Error(`Couldn't get certificate chain of ${host}:${port}: ${err.message}`, { cause: err });
-    }
+    const { missing, names } = await withSpinner(`Checking certificate chain of ${host}:${port}`, async () => {
+      let served;
+      try {
+        served = await openssl.getCertificateChain(host, port);
+      } catch (err) {
+        throw new Error(`Couldn't get certificate chain of ${host}:${port}: ${err.message}`, { cause: err });
+      }
 
-    const resolved = await resolveChain(served[0]);
-    const servedBodies = served.slice(1).map(certBody);
-    const missing = resolved.slice(1).filter((pem) => !servedBodies.includes(certBody(pem)));
+      const resolved = await resolveChain(served[0]);
+      const servedBodies = served.slice(1).map(certBody);
+      const missingPems = resolved.slice(1).filter((pem) => !servedBodies.includes(certBody(pem)));
+      const missingNames = await Promise.all(missingPems.map(async (pem, i) => {
+        try {
+          return await certName(pem);
+        } catch {
+          return `Intermediate ${i + 1}`;
+        }
+      }));
+
+      return { missing: missingPems, names: missingNames };
+    });
 
     if (missing.length === 0) {
       success(`${pc.bold(`${host}:${port}`)} ${pc.green('— chain complete')}`);
@@ -51,13 +62,6 @@ export const check = new Command('check')
     const intermediateWord = missing.length === 1 ? 'intermediate' : 'intermediates';
     error(`${pc.bold(`${host}:${port}`)} ${pc.red(`— chain incomplete, ${missing.length} ${intermediateWord} missing`)}`);
     console.error('');
-    const names = await Promise.all(missing.map(async (pem, i) => {
-      try {
-        return await certName(pem);
-      } catch {
-        return `Intermediate ${i + 1}`;
-      }
-    }));
     for (const name of names) {
       console.error(`    ${pc.red('✖')} ${name}`);
     }

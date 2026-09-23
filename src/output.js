@@ -51,6 +51,36 @@ export function die(msg, code = 1) {
   process.exit(code);
 }
 
+const SPINNER_FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+let spinnerInterval = null;
+
+/**
+ * Run an async function while showing a spinner on stderr, cleared
+ * before anything else prints. Automatically omitted when stderr is
+ * not an interactive terminal, so piped and scripted output stays
+ * untouched.
+ * @param {string} msg task description
+ * @param {() => Promise} fn
+ */
+export async function withSpinner(msg, fn) {
+  if (!process.stderr.isTTY || spinnerInterval) {
+    return fn();
+  }
+  let frame = 0;
+  process.stderr.write(`${pc.cyan(SPINNER_FRAMES[frame])} ${msg}`);
+  spinnerInterval = setInterval(() => {
+    frame = (frame + 1) % SPINNER_FRAMES.length;
+    process.stderr.write(`\r${pc.cyan(SPINNER_FRAMES[frame])} ${msg}`);
+  }, 80);
+  try {
+    return await fn();
+  } finally {
+    clearInterval(spinnerInterval);
+    spinnerInterval = null;
+    process.stderr.write('\r\x1b[2K');
+  }
+}
+
 /**
  * Format a date as a human-readable UTC timestamp,
  * e.g. "2026-07-29 22:10:08 UTC".
