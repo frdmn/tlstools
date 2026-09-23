@@ -68,6 +68,11 @@ cat leaf.pem intermediate.pem > leaf-fullchain.pem
 openssl req -new -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes \
   -keyout csr.key -out csr.pem -subj "/C=DE/O=tlstools test/CN=csr.example.com"
 
+# CSR generated from the leaf key, so a full cert/key/csr triple can be
+# match-tested against each other
+openssl req -new -key leaf.key -out leaf-csr.pem \
+  -subj "/C=DE/O=tlstools test/CN=localhost"
+
 # Keep only what the tests consume
 rm -f intermediate.csr leaf.csr leaf.ext root.srl intermediate.srl cross-root.srl \
   leaf-cross.csr leaf-cross.ext root.key intermediate.key cross-root.key csr.key
