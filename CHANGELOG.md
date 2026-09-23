@@ -1,3 +1,21 @@
+2.0.0 / 2026-09-23
+==================
+
+Modernized rewrite on top of `openssl-cert-tools` v2:
+
+* **Breaking:** Require NodeJS >= 20
+* **Breaking:** `tls chain` output no longer includes the self-signed root certificate (the bundle now contains the leaf plus intermediates, as you would serve it)
+* **Breaking:** `tls check` now compares the served intermediates against the AIA-resolved intermediates by certificate fingerprint sets, correctly handling order and formatting differences and no longer counting the root (previously most chains were reported as incomplete)
+* Migrate to the Promise-based `openssl-cert-tools` v2 API (OpenSSL 3.x and LibreSSL support)
+* Replace the vendored `cert-chain-resolver.sh` (and its `wget` and `shelljs` dependencies) with a native AIA resolver supporting DER, PKCS#7 and PEM distribution points
+* Restore the positional hostname argument (`tls crt frd.mn`) alongside `-H/--hostname`
+* Status and error messages now go to stderr, keeping stdout pipeable
+* Proper exit codes for all commands, `tls check` is scriptable again
+* Fix crash on the `-H` error path of `tls chain` (undefined variable) and other latent bugs (missing commas relying on sloppy-mode ASI, ignored exit codes, loose equality)
+* Show "Expired days ago" for expired certificates
+* Remove deprecated dependencies (`request`) and risky ones (`colors`, `shelljs`)
+* Add ESLint (flat config), `node:test` test suite running fully offline, and GitHub Actions CI (Node 20/22/24 on Ubuntu and macOS)
+
 1.4.0 / 2020-10-14
 ==================
 

@@ -1,19 +1,22 @@
 {
   "name": "tlstools",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "CLI tool to analyze, troubleshoot or inspect SSL certificates, requests or keys",
-  "main": "tls.js",
-  "dependencies": {
-    "clipboardy": "^2.3.0",
-    "colors": "^1.4.0",
-    "commander": "^6.1.0",
-    "openssl-cert-tools": "^1.4.3",
-    "request": "^2.88.2",
-    "shelljs": "^0.8.4"
+  "type": "module",
+  "bin": {
+    "tls": "bin/tls.js"
   },
-  "devDependencies": {},
+  "files": [
+    "bin",
+    "src",
+    "CHANGELOG.md"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint .",
+    "test": "node --test test/input.test.js test/chain-resolver.test.js test/integration.test.js"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "repository": {
     "type": "git",
@@ -21,7 +24,10 @@
   },
   "keywords": [
     "tls",
-    "tls",
+    "ssl",
+    "certificate",
+    "openssl",
+    "cli",
     "tools"
   ],
   "author": "Jonas Friedmann <j@frd.mn>",
@@ -30,7 +36,15 @@
     "url": "https://github.com/frdmn/tlstools/issues"
   },
   "homepage": "https://github.com/frdmn/tlstools#readme",
-  "bin": {
-    "tls": "tls.js"
+  "dependencies": {
+    "clipboardy": "^5.3.2",
+    "commander": "^15.0.0",
+    "openssl-cert-tools": "^2.0.0",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.11.0",
+    "globals": "^17.12.0"
   }
 }
