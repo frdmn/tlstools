@@ -4,7 +4,8 @@
  */
 
 import { Command } from 'commander';
-import { out, success } from '../output.js';
+import pc from 'picocolors';
+import { out, success, withSpinner, plural, printJson } from '../output.js';
 import { obtainCertificate, resolveHostname } from '../input.js';
 import { resolveChain } from '../chain-resolver.js';
 
@@ -14,19 +15,31 @@ export const chain = new Command('chain')
   .option('-H, --hostname <host[:port]>', 'use certificate from remote hostname')
   .option('-f, --filename <file>', 'use certificate from local file')
   .option('-c, --clipboard', 'use certificate from clipboard')
+  .option('--json', 'output machine-readable JSON instead of the formatted report')
   .action(async (hostname, options) => {
-    const certificate = await obtainCertificate({
-      hostname: resolveHostname(options, hostname),
-      filename: options.filename,
-      clipboard: options.clipboard
-    });
-
-    const resolved = await resolveChain(certificate);
+    const target = resolveHostname(options, hostname);
+    const resolved = await withSpinner(
+      target ? `Resolving certificate chain of ${target}` : 'Resolving certificate chain',
+      async () => resolveChain(await obtainCertificate({
+        hostname: target,
+        filename: options.filename,
+        clipboard: options.clipboard
+      }))
+    );
 
     if (resolved.length <= 1) {
       throw new Error('Unable to resolve intermediate certificates: no usable AIA "CA Issuers" information found');
     }
 
-    out(resolved.join('\n'));
-    success(`Resolved certificate chain with ${resolved.length - 1} intermediate certificate(s)`);
+    if (options.json) {
+      printJson({
+        chain: resolved.map((pem) => pem.trim()),
+        intermediateCount: resolved.length - 1
+      });
+      return;
+    }
+
+    out(pc.dim(resolved.join('\n')));
+    const intermediateCount = resolved.length - 1;
+    success(`Resolved certificate chain with ${intermediateCount} ${plural(intermediateCount, 'intermediate certificate')}`);
   });

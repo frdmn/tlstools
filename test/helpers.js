@@ -15,7 +15,10 @@ export const fixturePath = (name) => fileURLToPath(new URL(`./fixtures/${name}`,
 /**
  * Run the CLI against the given arguments.
  * Async (not spawnSync) so local test servers keep serving while
- * the child process talks to them.
+ * the child process talks to them. Colors are pinned off so the
+ * assertions hold even when the environment forces colors (CI
+ * runners set FORCE_COLOR for npm script children, which would
+ * otherwise embed ANSI codes in the captured output).
  * @param {string[]} args
  * @returns {Promise<{ code: number, stdout: string, stderr: string }>}
  */
@@ -23,7 +26,8 @@ export async function runCli(args) {
   try {
     const { stdout, stderr } = await execFileAsync(process.execPath, [binPath, ...args], {
       encoding: 'utf8',
-      timeout: 30000
+      timeout: 30000,
+      env: { ...process.env, NO_COLOR: '1', FORCE_COLOR: '0' }
     });
     return { code: 0, stdout, stderr };
   } catch (err) {
