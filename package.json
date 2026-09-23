@@ -1,6 +1,6 @@
 {
   "name": "tlstools",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "CLI tool to analyze, troubleshoot or inspect SSL certificates, requests or keys",
   "type": "module",
   "bin": {
