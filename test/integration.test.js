@@ -193,3 +193,31 @@ test('unknown commands fail', async () => {
   const result = await runCli(['nope']);
   assert.notEqual(result.code, 0);
 });
+
+test('match confirms a certificate, key and CSR share the same public key', async () => {
+  const result = await runCli(['match', '--crt', fixturePath('leaf.pem'), '--key', fixturePath('leaf.key'), '--csr', fixturePath('leaf-csr.pem')]);
+  assert.equal(result.code, 0);
+  assert.match(result.stdout, /Certificate\s+\S*leaf\.pem\s+[0-9a-f]{16}/);
+  assert.match(result.stderr, /all inputs share the same public key/);
+});
+
+test('match reports mismatching inputs with exit code 1', async () => {
+  const result = await runCli(['match', '--crt', fixturePath('leaf.pem'), '--key', fixturePath('leaf.key'), '--csr', fixturePath('csr.pem')]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /do not all share the same public key/);
+});
+
+test('match requires at least two inputs', async () => {
+  const result = await runCli(['match', '--crt', fixturePath('leaf.pem')]);
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /At least two of --crt, --key or --csr/);
+});
+
+test('match --json outputs hashes and verdict', async () => {
+  const result = await runCli(['match', '--key', fixturePath('leaf.key'), '--csr', fixturePath('leaf-csr.pem'), '--json']);
+  assert.equal(result.code, 0);
+  const data = JSON.parse(result.stdout);
+  assert.equal(data.match, true);
+  assert.equal(data.inputs.length, 2);
+  assert.ok(data.inputs.every((input) => /^[0-9a-f]{64}$/.test(input.publicKeySha256)));
+});
