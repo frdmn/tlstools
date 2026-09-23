@@ -77,8 +77,9 @@ after(async () => {
 });
 
 test('--version prints the package version', async () => {
+  const { version } = JSON.parse(await readFile(new URL('../package.json', import.meta.url)));
   const result = await runCli(['--version']);
-  assert.match(result.stdout, /^2\.0\.0/);
+  assert.equal(result.stdout.trim(), version);
 });
 
 test('crt accepts a positional hostname', async () => {
