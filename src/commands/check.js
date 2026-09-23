@@ -6,7 +6,7 @@
 import { Command } from 'commander';
 import pc from 'picocolors';
 import openssl from 'openssl-cert-tools';
-import { success, error, withSpinner } from '../output.js';
+import { success, error, withSpinner, plural } from '../output.js';
 import { parseHostOption, resolveHostname } from '../input.js';
 import { resolveChain, certBody } from '../chain-resolver.js';
 
@@ -59,8 +59,7 @@ export const check = new Command('check')
       return;
     }
 
-    const intermediateWord = missing.length === 1 ? 'intermediate' : 'intermediates';
-    error(`${pc.bold(`${host}:${port}`)} ${pc.red(`— chain incomplete, ${missing.length} ${intermediateWord} missing`)}`);
+    error(`${pc.bold(`${host}:${port}`)} ${pc.red(`— chain incomplete, ${missing.length} ${plural(missing.length, 'intermediate')} missing`)}`);
     console.error('');
     for (const name of names) {
       console.error(`    ${pc.red('✖')} ${name}`);

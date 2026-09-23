@@ -5,7 +5,7 @@
 
 import { Command } from 'commander';
 import pc from 'picocolors';
-import { out, success, withSpinner } from '../output.js';
+import { out, success, withSpinner, plural } from '../output.js';
 import { obtainCertificate, resolveHostname } from '../input.js';
 import { resolveChain } from '../chain-resolver.js';
 
@@ -31,5 +31,6 @@ export const chain = new Command('chain')
     }
 
     out(pc.dim(resolved.join('\n')));
-    success(`Resolved certificate chain with ${resolved.length - 1} intermediate certificate(s)`);
+    const intermediateCount = resolved.length - 1;
+    success(`Resolved certificate chain with ${intermediateCount} ${plural(intermediateCount, 'intermediate certificate')}`);
   });

@@ -109,7 +109,7 @@ test('chain resolves the intermediate over AIA and prints only PEM to stdout', a
   const result = await runCli(['chain', '-f', fixturePath('leaf.pem')]);
   assert.equal(result.code, 0);
   assert.equal((result.stdout.match(/-----BEGIN CERTIFICATE-----/g) ?? []).length, 2);
-  assert.match(result.stderr, /Resolved certificate chain with 1 intermediate/);
+  assert.match(result.stderr, /Resolved certificate chain with 1 intermediate certificate\r?\n/);
 });
 
 test('csr decodes a certificate request from a file', async () => {

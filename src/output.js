@@ -108,6 +108,17 @@ export function printSections(groups) {
 }
 
 /**
+ * Pluralize a noun for the given count.
+ * @param {number} n
+ * @param {string} one singular form, e.g. "intermediate certificate"
+ * @param {string} [many] plural form, defaults to singular + "s"
+ * @returns {string}
+ */
+export function plural(n, one, many = `${one}s`) {
+  return Math.abs(n) === 1 ? one : many;
+}
+
+/**
  * Color by certificate urgency: red when expired or within a week,
  * yellow within a month, green otherwise.
  * @param {number} days
@@ -118,8 +129,6 @@ export function daysColor(days) {
   if (days <= 30) return pc.yellow;
   return pc.green;
 }
-
-const pluralDays = (n) => (Math.abs(n) === 1 ? 'day' : 'days');
 
 /**
  * Print a one-line certificate validity verdict to stderr, colored by
@@ -132,10 +141,10 @@ const pluralDays = (n) => (Math.abs(n) === 1 ? 'day' : 'days');
 export function verdict(label, expiredDays, remainingDays) {
   console.error('');
   if (expiredDays !== undefined) {
-    console.error(`${pc.bold(pc.red(' ✖ '))}${pc.bold(label)} ${pc.red(`certificate expired ${expiredDays} ${pluralDays(expiredDays)} ago`)}`);
+    console.error(`${pc.bold(pc.red(' ✖ '))}${pc.bold(label)} ${pc.red(`certificate expired ${expiredDays} ${plural(expiredDays, 'day')} ago`)}`);
     return;
   }
   const color = daysColor(remainingDays);
   const symbol = remainingDays <= 30 ? '⚠' : '✔';
-  console.error(`${pc.bold(color(` ${symbol} `))}${pc.bold(label)} ${color(`— valid for another ${remainingDays} ${pluralDays(remainingDays)}`)}`);
+  console.error(`${pc.bold(color(` ${symbol} `))}${pc.bold(label)} ${color(`— valid for another ${remainingDays} ${plural(remainingDays, 'day')}`)}`);
 }

@@ -1,6 +1,7 @@
 Unreleased
 ==========
 
+* `tls chain` status message pluralizes the intermediate certificate count
 * Show a spinner on interactive terminals while certificate chains are fetched and resolved
 * Colorized terminal output: `tls crt` and `tls csr` print the PEM block, sectioned details (every issuer/subject DN component on its own line, validity dates) and a colored validity verdict; `tls check` failures name the missing intermediates and link to SSL Labs. Colors disable automatically when piped (`NO_COLOR`/`FORCE_COLOR` respected)
 
